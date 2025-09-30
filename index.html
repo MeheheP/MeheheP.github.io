@@ -107,8 +107,8 @@
             min-height: 100%;
             width: auto;
             height: auto;
-            transform: translateX(-50%) translateY(-50%) scale(1.05); /* Slightly zoomed in */
-            opacity: 0.8; /* Dim the image slightly */
+            transform: translateX(-50%) translateY(-50%) scale(1.05);
+            opacity: 0.8;
             object-fit: cover;
             z-index: -2;
             animation: zoomFade 20s infinite alternate ease-in-out;
@@ -124,13 +124,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5); /* Stronger overlay for text readability */
+            background: rgba(0, 0, 0, 0.5);
             z-index: -1;
         }
         .hero-content { z-index: 1; }
         .hero-title {
             font-family: 'Anton', sans-serif;
-            font-size: clamp(3rem, 12vw, 9rem); /* Smaller font size */
+            font-size: clamp(3rem, 12vw, 9rem);
             line-height: 1;
             text-transform: uppercase;
         }
@@ -141,21 +141,20 @@
             overflow: hidden;
         }
         .horizontal-scroll-container {
-            width: fit-content; /* Adjust based on content */
+            width: fit-content;
             display: flex;
             will-change: transform;
         }
         .panel {
-            min-width: 70vw; /* Panels take up 70% of viewport width */
+            min-width: 70vw;
             padding: 0 5vw;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            scroll-snap-align: start; /* For smooth snapping */
         }
         .section-heading {
             font-family: 'Anton', sans-serif;
-            font-size: clamp(2rem, 6vw, 4rem); /* Smaller section heading */
+            font-size: clamp(2rem, 6vw, 4rem);
             margin-bottom: 2rem;
             padding-left: 5vw;
         }
@@ -218,7 +217,7 @@
         }
         footer h2 {
             font-family: 'Anton', sans-serif;
-            font-size: clamp(2rem, 8vw, 4rem); /* Smaller footer heading */
+            font-size: clamp(2rem, 8vw, 4rem);
             margin-bottom: 1rem;
         }
         footer a {
@@ -241,7 +240,7 @@
         @media (max-width: 768px) {
             nav { padding: 1rem 1.5rem; }
             .hero-title { font-size: clamp(2.5rem, 15vw, 8rem); }
-            .panel { min-width: 90vw; } /* Panels take up more width on smaller screens */
+            .panel { min-width: 90vw; }
             .section-heading { font-size: clamp(2rem, 8vw, 4rem); padding-left: 1.5rem; }
             footer h2 { font-size: clamp(1.5rem, 10vw, 3rem); }
         }
@@ -263,7 +262,7 @@
         </nav>
 
         <section id="hero">
-            <img src="Landing_page_photo.jpg" alt="Mehul Parashar Photo" class="hero-img">
+            <img src="photo.jpg" alt="Mehul Parashar Photo" class="hero-img">
             <div class="hero-content">
                 <h1 class="hero-title">Data Scientist</h1>
             </div>
@@ -410,21 +409,13 @@
         document.querySelectorAll(".horizontal-scroll-section").forEach(section => {
             let container = section.querySelector(".horizontal-scroll-container");
             if (container) {
-                // Determine the total width needed for the horizontal scroll
-                // This accounts for all panels (including the heading panel)
-                const panels = Array.from(container.children);
-                let totalWidth = 0;
-                panels.forEach(panel => {
-                    totalWidth += panel.offsetWidth;
-                });
-
                 gsap.to(container, {
-                    x: () => -(totalWidth - window.innerWidth), // Scroll by total width minus viewport width
+                    x: () => -(container.scrollWidth - window.innerWidth),
                     ease: "none",
                     scrollTrigger: {
                         trigger: section,
                         start: "top top",
-                        end: () => `+=${totalWidth - window.innerWidth}`,
+                        end: () => `+=${container.scrollWidth - window.innerWidth}`,
                         scrub: true,
                         pin: true,
                         invalidateOnRefresh: true,
