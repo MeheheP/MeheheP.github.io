@@ -3,117 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mehul Parashar | The Data Superhero</title>
-    
-    <!-- Fonts and Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Permanent+Marker&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <title>Mehul Parashar | Data Science Portfolio</title>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
-    :root {
-        --primary-color: #ffc107; /* Bright Yellow */
-        --secondary-color: #e53935; /* Action Red */
-        --background-color: #1a2330; /* Night Blue */
-        --text-color: #f0f0f0;
-        --panel-bg: #2c3e50;
-        --border-color: #121212;
-        --section-bg: #23395d;
-        --card-bg: #34495e;
-    }
-    body {
-        font-family: 'Lato', sans-serif;
-        background: var(--background-color);
-        color: var(--text-color);
-        margin: 0;
-        min-height: 100vh;
-        padding: 0;
-    }
-    nav {
-        background: var(--panel-bg);
-        border-bottom: 2px solid var(--primary-color);
-        position: fixed; top: 0; left: 0; width: 100%;
-        z-index: 10;
-    }
-    nav ul {
-        display: flex; justify-content: center; gap: 2rem; list-style: none; margin: 0; padding: 1rem 0;
-    }
-    nav ul li a {
-        color: var(--primary-color); font-family: 'Bangers', cursive; font-size: 1.5rem; text-decoration: none; letter-spacing: 2px;
-        transition: color 0.2s;
-    }
-    nav ul li a:hover { color: var(--secondary-color); }
-    .top-contact {
-        display: flex; justify-content: center; align-items: center; gap: 1.5rem;
-        padding: 1.5rem 0 1rem 0; font-size: 1.2rem;
-    }
-    .top-contact .fa { margin-right: 6px; color: var(--primary-color); }
-    .panel {
-        position: relative;
-        max-width: 900px;
-        margin: 110px auto 0 auto;
-        background: var(--panel-bg);
-        border: 5px solid var(--border-color);
-        box-shadow: 0 0 0 10px var(--panel-bg), 0 0 0 15px var(--border-color);
-        text-align: center;
-        padding: 3rem 2rem 2rem 2rem;
-        overflow: hidden;
-        animation: fadeIn 1.5s ease-in-out;
-    }
-    @keyframes fadeIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
-    .comic-background-portrait {
-        position: absolute;
-        bottom: -20px; right: -20px;
-        width: 270px; opacity: 0.22; transform: rotate(5deg); pointer-events: none; z-index:0;
-    }
-    .hero-content { position: relative; z-index: 1; }
-    .name-title {
-        font-family: 'Bangers', cursive;
-        font-size: clamp(3.5rem, 10vw, 6rem);
-        color: var(--primary-color);
-        margin-bottom: 0.5rem;
-        letter-spacing: 3px;
-        text-shadow: 4px 4px 0px var(--border-color),-2px -2px 0px var(--secondary-color);
-    }
-    .animated-headline {
-        font-family: 'Permanent Marker', cursive;
-        font-size: clamp(1.5rem, 4vw, 2.2rem);
-        color: var(--text-color);
-        margin-bottom: 2rem;
-        min-height: 60px;
-    }
-    .typing-cursor {
-        display:inline-block; width:5px; height:2rem; background:var(--primary-color);
-        animation:blink 0.8s infinite; vertical-align:bottom;
-    }
-    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
-    .summary {
-        font-size:1.1rem; line-height:1.7; max-width:650px; margin:0 auto 2rem auto;
-        color:var(--text-color);
-        border:3px dashed rgba(255,255,255,0.2);
-        padding:1rem; background:rgba(0,0,0,0.18);
-    }
-    .cta-buttons { display:flex; justify-content:center; gap:1.2rem; margin-bottom:2rem; flex-wrap:wrap;}
-    .btn {
-        font-family:'Bangers',cursive;letter-spacing:2px;font-size:1.2rem;padding:12px 32px;border-radius:4px;
-        text-decoration:none;transition:all 0.2s ease-out;border:3px solid var(--border-color); display:inline-block;
-    }
-    .btn-primary { background:var(--primary-color); color:var(--border-color); box-shadow:5px 5px 0px var(--border-color);}
-    .btn-primary:hover { background:#ffdb58; transform:translate(2px,2px); box-shadow:3px 3px 0px var(--border-color);}
-    .btn-secondary { background:var(--secondary-color); color:var(--text-color); box-shadow:5px 5px 0px var(--border-color);}
-    .btn-secondary:hover { background:#f44336; transform:translate(2px,2px); box-shadow:3px 3px 0px var(--border-color);}
-    .social-links a {color:var(--text-color);font-size:2rem;margin:0 15px;transition:all 0.2s;}
-    .social-links a:hover {color:var(--primary-color);transform:translateY(-5px);}
-    section { max-width:900px; margin:2.5rem auto; background:var(--section-bg); border-radius:8px; padding:2rem; box-shadow:0 5px 24px rgba(0,0,0,0.13); }
-    section h2 { font-family:'Bangers',cursive;font-size:2.2rem;color:var(--primary-color);margin-bottom:1.2rem;text-align:left; }
-    .cards { display:flex; flex-wrap:wrap; gap:1.2rem; }
-    .card { background:var(--card-bg); flex:1 1 360px; border-radius:8px; padding:1.1rem 1.2rem; box-shadow:0 3px 16px rgba(0,0,0,0.10); margin-bottom:1.1rem; transition:transform 0.2s; }
-    .card:hover { transform:translateY(-5px) scale(1.03); box-shadow:0 7px 32px rgba(34,38,65,0.19);}
-    .card-title { font-weight:bold; color:var(--primary-color); font-size:1.1rem; margin-bottom:0.7rem; }
-    ul { padding-left: 1.1rem; }
-    .location-list { display: flex; flex-wrap: wrap; gap: 1.2rem; }
-    .location-card { background: var(--card-bg); padding: 1rem; border-radius: 8px; min-width: 220px; font-size: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.09); }
-    .course-list { columns: 2; column-gap: 2rem; font-size: 1rem; }
-    @media(max-width:900px) { section, .panel { margin-left:8px; margin-right:8px; } .cards{flex-direction:column;} }
-    @media(max-width:670px) { nav ul {gap:0.6rem;} .panel{padding:16px;} section{padding:16px;} }
+        :root {
+            --main-bg: #f7f9fb;
+            --primary: #0353a4;
+            --accent: #1389eb;
+            --secondary: #e0e6ed;
+            --card-bg: #fff;
+            --text: #1a232e;
+            --muted: #6b6b6b;
+        }
+        * { box-sizing: border-box; margin:0; padding:0; }
+        body {
+            background: var(--main-bg);
+            color: var(--text);
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+        }
+        nav {
+            position: sticky; top: 0; background: var(--card-bg);
+            z-index: 1000; border-bottom: 1.5px solid var(--secondary);
+        }
+        nav ul { display:flex; justify-content:center; gap:2rem; padding: 1.15rem 0; list-style: none; }
+        nav ul li a { 
+            color: var(--primary); font-weight:700; text-decoration:none; font-size:1.1rem; 
+            padding-bottom: 2px; border-bottom: 2px solid transparent; transition: border 0.2s;
+        }
+        nav ul li a:hover { border-bottom: 2px solid var(--accent);}
+        .header-section {
+            display: flex; flex-direction: column; align-items: center; gap: 1.1rem;
+            padding: 2.5rem 1rem 1.2rem 1rem; background: var(--card-bg); box-shadow: 0 3px 28px rgba(35,53,90,0.07);
+            border-radius: 0 0 18px 18px; max-width: 740px; margin:30px auto 20px auto;
+        }
+        .avatar {
+            width:96px; height:96px; border-radius:50%; object-fit:cover; border:3px solid var(--primary);
+        }
+        .main-title { font-size:2rem; font-weight:700; color:var(--primary);}
+        .subtitle { font-size:1.13rem; color:var(--muted);}
+        .contact { display:flex; gap:1.4rem; flex-wrap: wrap; align-items: center; font-size:1.02rem;}
+        .contact span, .contact a { color: var(--text); }
+        .social-icons a { margin:0 8px; color:var(--accent); font-size:1.5rem; transition:color 0.18s;}
+        .social-icons a:hover { color: var(--primary);}
+        section {
+            max-width: 740px; margin: 0 auto 32px auto; background: var(--card-bg);
+            border-radius: 8px; box-shadow: 0 2px 18px rgba(35,53,90,0.07); padding:1.4rem 1.7rem;
+        }
+        section:not(:first-of-type) { margin-top:32px;}
+        h2 {
+            font-size:1.45rem; font-weight:700; color:var(--primary);
+            margin-bottom: 1.0rem;
+            border-left: 4px solid var(--accent); padding-left:0.6rem;
+            letter-spacing:0.01em;
+        }
+        .cards { display: grid; grid-template-columns:1fr 1fr; gap: 1.1rem;}
+        .card { background: var(--secondary); border-radius: 7px; padding: 1.05rem 1.10rem; }
+        .card-title { font-weight:700; color: var(--accent); font-size: 1.02rem; margin-bottom:0.25rem;}
+        ul { margin-left:1.08rem; margin-bottom:0.6rem;}
+        .locations { display:flex; flex-wrap:wrap; gap:1.2rem;}
+        .location-card { background: var(--secondary); border-radius: 7px; padding:0.7rem 1.1rem; min-width:170px; }
+        .location-card i { color:var(--accent); }
+        .course-list { columns: 2; gap: 1rem; font-size:1.02rem;}
+        @media(max-width: 970px){ .cards{ grid-template-columns:1fr;} }
+        @media(max-width: 670px){ section{ padding:12px 6px;} .header-section{padding:20px 6px;} nav ul{gap:0.7rem;} }
     </style>
 </head>
 <body>
@@ -128,29 +84,17 @@
         </ul>
     </nav>
 
-    <div class="top-contact">
-        <span><i class="fa fa-phone"></i> (317)908-0507</span>
-        <span><i class="fa fa-envelope"></i> <a href="mailto:parasharmeh@gmail.com" style="color:var(--primary-color);text-decoration:underline;">parasharmeh@gmail.com</a></span>
-        <!-- Add LinkedIn/GitHub links if needed -->
-    </div>
-
-    <div class="panel">
-        <img src="profile.jpg" alt="Mehul Parashar Comic Background" class="comic-background-portrait">
-        <div class="hero-content">
-            <h1 class="name-title">Mehul Parashar!</h1>
-            <h2 class="animated-headline">Your Friendly Neighborhood <span id="typing-text"></span><span class="typing-cursor"></span></h2>
-            <p class="summary">
-                My origin story? I was once an ordinary student, but after being exposed to massive datasets, I developed the extraordinary ability to build scalable data pipelines, develop super-human machine learning models, and create insightful visualizations that reveal the truth! I transform complex data into actionable business solutions.
-            </p>
-            <div class="cta-buttons">
-                <a href="#projects" class="btn btn-primary">See My Case Files</a>
-                <a href="mailto:parasharmeh@gmail.com" class="btn btn-secondary">Get My Dossier</a>
-            </div>
-            <div class="social-links">
-                <a href="https://linkedin.com/in/YOUR-LINKEDIN" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                <a href="https://github.com/YOUR-GITHUB" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                <a href="mailto:parasharmeh@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
-            </div>
+    <div class="header-section">
+        <img src="profile.jpg" alt="Mehul Parashar Photo" class="avatar">
+        <div class="main-title">Mehul Parashar</div>
+        <div class="subtitle">Data Science | Machine Learning | Business Analytics</div>
+        <div class="contact">
+            <span><i class="fa fa-phone"></i> (317)908-0507</span>
+            <span><i class="fa fa-envelope"></i> <a href="mailto:parasharmeh@gmail.com">parasharmeh@gmail.com</a></span>
+        </div>
+        <div class="social-icons">
+            <a href="https://linkedin.com/in/YOUR-LINKEDIN" target="_blank"><i class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/YOUR-GITHUB" target="_blank"><i class="fab fa-github"></i></a>
         </div>
     </div>
 
@@ -158,40 +102,42 @@
         <h2>Education</h2>
         <div class="cards">
             <div class="card">
-                <span class="card-title"><i class="fa fa-university"></i> Westcliff University</span>
+                <div class="card-title">Westcliff University</div>
                 MBA in Data Driven Decisions
             </div>
             <div class="card">
-                <span class="card-title"><i class="fa fa-university"></i> Purdue University</span>
+                <div class="card-title">Purdue University</div>
                 MS in Computer Information Science
             </div>
             <div class="card">
-                <span class="card-title"><i class="fa fa-university"></i> University of Mumbai</span>
+                <div class="card-title">University of Mumbai</div>
                 BSc in Computer Science
             </div>
         </div>
     </section>
 
     <section id="experience">
-        <h2>Professional / Internship Experience</h2>
+        <h2>Professional & Internship Experience</h2>
         <div class="cards">
             <div class="card">
-                <span class="card-title">Spotlist Inc. (New Jersey, USA) <br> Lead Data Science Intern <br><i class="fa fa-calendar"></i> July 2023 – March 2024</span>
+                <div class="card-title">Spotlist Inc. — Lead Data Science Intern</div>
+                <span style="color:#6b6b6b;font-size:0.97em;">New Jersey, USA | July 2023 – March 2024</span>
                 <ul>
-                    <li>Implemented a streamlined data pipeline using pandas and Transformers libraries to automate data cleaning/preprocessing from various sources (User Profiles, Booking Records) — reduced data collection time by 30%.</li>
-                    <li>Engineered real-time data pipelines using AWS (S3, Lambda, Kinesis) and Apache Kafka for event-driven streaming, enhancing reliability.</li>
-                    <li>Developed interactive dashboards with Plotly Dash and Bokeh to visualize user demographics and geographic data.</li>
-                    <li>Monitored and optimized AWS EC2, S3, RDS infrastructure for performance/cost efficiency; enforced best governance & security practices.</li>
-                    <li>Created ETL workflows to reduce reporting latency by 50% while maintaining data integrity.</li>
+                    <li>Built data pipeline using pandas/Transformers to automate cleaning—reduced data collection time by 30%.</li>
+                    <li>Engineered AWS/Kafka-based real-time streaming, improving reliability.</li>
+                    <li>Dashboards with Plotly Dash/Bokeh for user demographics visualization.</li>
+                    <li>Optimized AWS infrastructure for performance and cost, enforced data governance.</li>
+                    <li>Designed ETL workflows reducing reporting latency by 50%.</li>
                 </ul>
             </div>
             <div class="card">
-                <span class="card-title">Dhakad Events & Entertainment (Mumbai, India) <br> Junior Analyst (Data & Operations) <br> <i class="fa fa-calendar"></i> August 2019 - July 2021</span>
+                <div class="card-title">Dhakad Events & Entertainment — Junior Analyst (Data & Operations)</div>
+                <span style="color:#6b6b6b;font-size:0.97em;">Mumbai, India | August 2019 - July 2021</span>
                 <ul>
-                    <li>Standardized data protocols for tracking celebrity endorsements, film revenue analytics, and social media engagement.</li>
-                    <li>Developed SQL-based reporting to track endorsements/revenue/social engagement — reduced manual effort by 35 hours/month.</li>
-                    <li>Assisted with data warehousing/governance, cutting inconsistencies by 15%.</li>
-                    <li>Created automated Power BI/Tableau dashboards for entertainment analytics, improving decision speed by 25%.</li>
+                    <li>Standardized data and reporting for celebrity endorsements/film analytics/social engagement.</li>
+                    <li>SQL reporting reduced manual effort by 35 hrs/month.</li>
+                    <li>Enabled data warehousing and compliance—reduced inconsistencies 15%.</li>
+                    <li>Built BI dashboards (Power BI, Tableau) for industry trend tracking.</li>
                 </ul>
             </div>
         </div>
@@ -201,20 +147,20 @@
         <h2>Projects</h2>
         <div class="cards">
             <div class="card">
-                <span class="card-title">AI Health Chatbot</span>
-                Designed chatbot using ML/NLP techniques; models: Decision Classifier, Random Forest, SVM, XGBoost, Neural Networks, GPT-2, BioBERT.
+                <div class="card-title">AI Health Chatbot</div>
+                ML/NLP chatbot (Decision Classifier, RF, SVM, XGBoost, Neural Net, GPT-2, BioBERT).
             </div>
             <div class="card">
-                <span class="card-title">Climate Change Anomaly Detection</span>
-                Developed ensemble model (87% accuracy) to detect anomalies in weather data; advanced precipitation pattern analysis. Precision: 85%, Recall: 88%.
+                <div class="card-title">Climate Change Anomaly Detection</div>
+                Ensemble model, 87% accuracy in weather anomaly detection (Precision 85% / Recall 88%).
             </div>
             <div class="card">
-                <span class="card-title">Sales Data Pipeline Optimization for E-Commerce</span>
-                Built scalable real-time pipeline using AWS (Kinesis, Lambda, S3), Kafka; automated sales data ingestion/processing, enhanced reporting & Tableau dashboards.
+                <div class="card-title">Sales Data Pipeline for E-Commerce</div>
+                AWS/Kafka real-time sales pipeline—enhanced reporting, Tableau dashboards, forecasting.
             </div>
             <div class="card">
-                <span class="card-title">Product Defect Detection using Image Recognition</span>
-                Developed CNN model (TensorFlow, Keras, OpenCV) for defect detection in manufacturing, improving QC accuracy to 95%.
+                <div class="card-title">Product Defect Detection</div>
+                CNN (TensorFlow/Keras/OpenCV)—automated manufacturing QC, improved accuracy to 95%.
             </div>
         </div>
     </section>
@@ -223,23 +169,24 @@
         <h2>Skills</h2>
         <div class="cards">
             <div class="card">
-                <span class="card-title">Languages/Database</span>
-                Python, R, SQL, HTML, Java, Bash<br>MySQL, MongoDB, NoSQL
+                <div class="card-title">Languages/Database</div>
+                Python, R, SQL, HTML, Java, Bash<br>
+                MySQL, MongoDB, NoSQL
             </div>
             <div class="card">
-                <span class="card-title">Data Warehousing/Modeling/Processing</span>
-                Ms SQL Server, AWS, Snowflake, ErWin Data Modeler, pandas, numpy, dplyr, plotly, seaborn
+                <div class="card-title">Data Warehousing/Modeling/Processing</div>
+                Ms SQL Server, AWS, Snowflake, ErWin, pandas, numpy, dplyr, plotly, seaborn
             </div>
             <div class="card">
-                <span class="card-title">Machine Learning Libraries</span>
+                <div class="card-title">ML/AI Libraries</div>
                 scikit-learn, keras, lightGBM, xgboost, PyTorch
             </div>
             <div class="card">
-                <span class="card-title">Visualization / BI Tools</span>
-                Tableau, Power BI, Google Cloud, Oracle, Alteryx
+                <div class="card-title">Visualization/BI</div>
+                Tableau, Power BI, Alteryx, Google Cloud, Oracle
             </div>
             <div class="card">
-                <span class="card-title">Soft Skills</span>
+                <div class="card-title">Other</div>
                 Data Governance, ETL, Predictive Modeling
             </div>
         </div>
@@ -247,18 +194,18 @@
 
     <section id="locations">
         <h2>Locations</h2>
-        <div class="location-list">
+        <div class="locations">
             <div class="location-card">
-                <i class="fa fa-map-marker-alt"></i> Mumbai, India <br>
-                July 2017 - November 2020
+                <i class="fa fa-map-marker-alt"></i> Mumbai, India<br>
+                <span style="color:#6b6b6b;">July 2017 - November 2020</span>
             </div>
             <div class="location-card">
-                <i class="fa fa-map-marker-alt"></i> Orlando, Florida <br>
-                October 2024 - October 2026
+                <i class="fa fa-map-marker-alt"></i> Orlando, Florida<br>
+                <span style="color:#6b6b6b;">October 2024 - October 2026</span>
             </div>
             <div class="location-card">
-                <i class="fa fa-map-marker-alt"></i> Indianapolis, Indiana <br>
-                August 2022 – May 2024
+                <i class="fa fa-map-marker-alt"></i> Indianapolis, Indiana<br>
+                <span style="color:#6b6b6b;">August 2022 – May 2024</span>
             </div>
         </div>
     </section>
@@ -266,50 +213,15 @@
     <section id="coursework">
         <h2>Relevant Coursework</h2>
         <div class="course-list">
-            Computer Networks<br>
-            Intelligent Systems<br>
-            Programming with C<br>
-            Organizational Management<br>
-            Distributed Computing<br>
-            Database Security<br>
-            Database Systems<br>
-            Java<br>
-            Cloud Computing<br>
-            Data Communication & Computer Networks<br>
-            Data Visualization<br>
-            Discrete Mathematics<br>
-            Statistical Modeling
+            Computer Networks<br>Intelligent Systems<br>Programming with C<br>
+            Organizational Management<br>Distributed Computing<br>Database Security<br>
+            Database Systems<br>Java<br>Cloud Computing<br>
+            Data Communication & Computer Networks<br>Data Visualization<br>
+            Discrete Mathematics<br>Statistical Modeling
         </div>
     </section>
-
     <script>
-        // Typing animation for hero-section
-        const typingText = document.getElementById('typing-text');
-        const roles = ["Data Superhero", "Insight Avenger", "Model Mastermind"];
-        let roleIndex = 0; let charIndex = 0; let isDeleting = false;
-        function type() {
-            const currentRole = roles[roleIndex];
-            if (isDeleting) {
-                typingText.textContent = currentRole.substring(0, charIndex-1);
-                charIndex--;
-                if (charIndex === 0) {
-                    isDeleting = false;
-                    roleIndex = (roleIndex + 1) % roles.length;
-                    setTimeout(type, 500); return;
-                }
-            } else {
-                typingText.textContent = currentRole.substring(0, charIndex+1);
-                charIndex++;
-                if (charIndex === currentRole.length) {
-                    isDeleting = true; setTimeout(type, 1700); return;
-                }
-            }
-            setTimeout(type, isDeleting ? 75 : 125);
-        }
-        document.addEventListener("DOMContentLoaded", function() {
-            setTimeout(type, 1200);
-        });
-        // Smooth scroll navigation
+        // Smooth scroll
         document.querySelectorAll('nav a').forEach(link => {
             link.addEventListener('click', function(e){
                 e.preventDefault();
