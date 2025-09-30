@@ -97,8 +97,9 @@
             align-items: center;
             text-align: center;
             overflow: hidden;
+            background-color: #333; /* Fallback for image load */
         }
-        #video-bg {
+        .hero-img {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -106,8 +107,15 @@
             min-height: 100%;
             width: auto;
             height: auto;
-            transform: translateX(-50%) translateY(-50%);
+            transform: translateX(-50%) translateY(-50%) scale(1.05); /* Slightly zoomed in */
+            opacity: 0.8; /* Dim the image slightly */
+            object-fit: cover;
             z-index: -2;
+            animation: zoomFade 20s infinite alternate ease-in-out;
+        }
+        @keyframes zoomFade {
+            0% { transform: translateX(-50%) translateY(-50%) scale(1.05); opacity: 0.8; }
+            100% { transform: translateX(-50%) translateY(-50%) scale(1.1); opacity: 0.7; }
         }
         #hero::after {
             content: '';
@@ -116,13 +124,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.5); /* Stronger overlay for text readability */
             z-index: -1;
         }
         .hero-content { z-index: 1; }
         .hero-title {
             font-family: 'Anton', sans-serif;
-            font-size: clamp(3rem, 15vw, 12rem);
+            font-size: clamp(3rem, 12vw, 9rem); /* Smaller font size */
             line-height: 1;
             text-transform: uppercase;
         }
@@ -133,21 +141,21 @@
             overflow: hidden;
         }
         .horizontal-scroll-container {
-            width: 300%; /* Adjust based on content */
+            width: fit-content; /* Adjust based on content */
             display: flex;
             will-change: transform;
         }
         .panel {
-            width: 100vw;
-            height: 80vh;
+            min-width: 70vw; /* Panels take up 70% of viewport width */
             padding: 0 5vw;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            scroll-snap-align: start; /* For smooth snapping */
         }
         .section-heading {
             font-family: 'Anton', sans-serif;
-            font-size: clamp(2rem, 8vw, 6rem);
+            font-size: clamp(2rem, 6vw, 4rem); /* Smaller section heading */
             margin-bottom: 2rem;
             padding-left: 5vw;
         }
@@ -156,12 +164,47 @@
             padding: 2rem;
             border-radius: 10px;
             border: 1px solid #222;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-bottom: 1rem;
         }
         .card-title {
             font-family: 'Anton', sans-serif;
             font-size: 1.5rem;
             margin-bottom: 0.5rem;
         }
+        .card ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 0.5rem;
+            color: var(--secondary-text);
+        }
+        .card ul li {
+            margin-bottom: 0.3rem;
+        }
+        .card .date {
+            color: var(--secondary-text);
+            font-size: 0.9em;
+            margin-bottom: 1em;
+            display: block;
+        }
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+        .skill-item {
+            background: #1a1a1a;
+            padding: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.9em;
+            color: var(--secondary-text);
+            border: 1px solid #222;
+        }
+
 
         /* Footer */
         footer {
@@ -175,7 +218,7 @@
         }
         footer h2 {
             font-family: 'Anton', sans-serif;
-            font-size: clamp(2.5rem, 10vw, 8rem);
+            font-size: clamp(2rem, 8vw, 4rem); /* Smaller footer heading */
             margin-bottom: 1rem;
         }
         footer a {
@@ -195,6 +238,13 @@
         }
         .socials a:hover { color: var(--primary-text); }
 
+        @media (max-width: 768px) {
+            nav { padding: 1rem 1.5rem; }
+            .hero-title { font-size: clamp(2.5rem, 15vw, 8rem); }
+            .panel { min-width: 90vw; } /* Panels take up more width on smaller screens */
+            .section-heading { font-size: clamp(2rem, 8vw, 4rem); padding-left: 1.5rem; }
+            footer h2 { font-size: clamp(1.5rem, 10vw, 3rem); }
+        }
     </style>
 </head>
 <body>
@@ -206,37 +256,123 @@
             <a href="#hero" class="nav-logo">Mehul Parashar</a>
             <div class="nav-menu">
                 <a href="#work">Work</a>
+                <a href="#skills-section">Skills</a>
+                <a href="#education-section">Education</a>
+                <a href="#experience-section">Experience</a>
             </div>
         </nav>
 
         <section id="hero">
-            <video autoplay muted loop playsinline id="video-bg">
-                <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-video-of-a-dark-liquid-manipulated-in-motion-34413-large.mp4" type="video/mp4">
-            </video>
+            <img src="Landing_page_photo.jpg" alt="Mehul Parashar Photo" class="hero-img">
             <div class="hero-content">
                 <h1 class="hero-title">Data Scientist</h1>
             </div>
         </section>
 
         <section id="work" class="horizontal-scroll-section">
-            <div class="horizontal-scroll-container">
+            <div class="horizontal-scroll-container" style="width: 300%;">
                 <div class="panel">
                     <h2 class="section-heading">Selected Projects</h2>
                 </div>
                 <div class="panel">
                     <div class="card">
                         <h3 class="card-title">AI Health Chatbot</h3>
-                        <p>Developed an ML/NLP chatbot using advanced models including BioBERT and GPT-2 to provide intelligent health assistance.</p>
+                        <p style="color:var(--secondary-text);">Developed an ML/NLP chatbot using advanced models including BioBERT and GPT-2 to provide intelligent health assistance.</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">Climate Anomaly Detection</h3>
+                        <p style="color:var(--secondary-text);">Built an ensemble model achieving 87% accuracy in identifying weather anomalies, enhancing climate change analysis.</p>
                     </div>
                 </div>
                 <div class="panel">
                     <div class="card">
-                        <h3 class="card-title">Climate Anomaly Detection</h3>
-                        <p>Built an ensemble model achieving 87% accuracy in identifying weather anomalies, enhancing climate change analysis.</p>
+                        <h3 class="card-title">E-Commerce Sales Pipeline</h3>
+                        <p style="color:var(--secondary-text);">Constructed a real-time sales data pipeline using AWS and Kafka, enabling dynamic forecasting with Tableau dashboards.</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">Product Defect Detection</h3>
+                        <p style="color:var(--secondary-text);">Implemented a CNN with TensorFlow and Keras to automate manufacturing QC, boosting defect detection accuracy to 95%.</p>
                     </div>
                 </div>
             </div>
         </section>
+
+        <section id="skills-section" class="horizontal-scroll-section">
+            <div class="horizontal-scroll-container" style="width: 200%;">
+                <div class="panel">
+                    <h2 class="section-heading">Technical Skills</h2>
+                </div>
+                <div class="panel">
+                    <div class="skills-grid">
+                        <div class="skill-item">Python</div>
+                        <div class="skill-item">R</div>
+                        <div class="skill-item">SQL</div>
+                        <div class="skill-item">AWS</div>
+                        <div class="skill-item">Tableau</div>
+                        <div class="skill-item">Power BI</div>
+                        <div class="skill-item">Scikit-learn</div>
+                        <div class="skill-item">TensorFlow</div>
+                        <div class="skill-item">PyTorch</div>
+                        <div class="skill-item">Pandas</div>
+                        <div class="skill-item">NumPy</div>
+                        <div class="skill-item">XGBoost</div>
+                        <div class="skill-item">Kafka</div>
+                        <div class="skill-item">Docker</div>
+                        <div class="skill-item">Git & GitHub</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="education-section" class="horizontal-scroll-section">
+            <div class="horizontal-scroll-container" style="width: 200%;">
+                <div class="panel">
+                    <h2 class="section-heading">Education</h2>
+                </div>
+                <div class="panel">
+                    <div class="card">
+                        <h3 class="card-title">Westcliff University</h3>
+                        <p style="color:var(--secondary-text);">MBA in Data Driven Decisions</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">Purdue University</h3>
+                        <p style="color:var(--secondary-text);">MS in Computer Information Science</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">University of Mumbai</h3>
+                        <p style="color:var(--secondary-text);">BSc in Computer Science</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="experience-section" class="horizontal-scroll-section">
+            <div class="horizontal-scroll-container" style="width: 200%;">
+                <div class="panel">
+                    <h2 class="section-heading">Experience</h2>
+                </div>
+                <div class="panel">
+                    <div class="card">
+                        <h3 class="card-title">Lead Data Science Intern</h3>
+                        <span class="date">Spotlist Inc. | July 2023 – March 2024</span>
+                        <ul>
+                            <li>Reduced data collection time by 30% by building an automated cleaning pipeline.</li>
+                            <li>Engineered a real-time AWS/Kafka streaming architecture to enhance data reliability.</li>
+                            <li>Cut reporting latency by 50% through the design of optimized ETL workflows.</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">Junior Analyst (Data & Ops)</h3>
+                        <span class="date">Dhakad Events & Entertainment | August 2019 - July 2021</span>
+                        <ul>
+                            <li>Reduced manual reporting effort by 35 hours per month via SQL automation.</li>
+                            <li>Decreased data inconsistencies by 15% by implementing robust data warehousing.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
 
         <footer>
             <h2>Get In Touch</h2>
@@ -263,27 +399,39 @@
         document.addEventListener('mousemove', e => {
             cursor.setAttribute("style", "top: " + (e.pageY) + "px; left: " + (e.pageX) + "px;");
         });
-        document.querySelectorAll('a, button, .card').forEach(el => {
+        document.querySelectorAll('a, button, .card, .skill-item').forEach(el => {
             el.addEventListener('mouseover', () => cursor.classList.add('cursor-grow'));
             el.addEventListener('mouseout', () => cursor.classList.remove('cursor-grow'));
         });
 
-        // Horizontal Scroll
+        // Horizontal Scroll for each section
         gsap.registerPlugin(ScrollTrigger);
-        const container = document.querySelector(".horizontal-scroll-container");
-        gsap.to(container, {
-            x: () => -(container.scrollWidth - document.documentElement.clientWidth) + "px",
-            ease: "none",
-            scrollTrigger: {
-                trigger: ".horizontal-scroll-section",
-                start: "top top",
-                end: () => "+=" + (container.scrollWidth - document.documentElement.clientWidth),
-                scrub: true,
-                pin: true,
-                invalidateOnRefresh: true,
-                anticipatePin: 1
+
+        document.querySelectorAll(".horizontal-scroll-section").forEach(section => {
+            let container = section.querySelector(".horizontal-scroll-container");
+            if (container) {
+                // Adjust container width based on panels (excluding the heading panel)
+                const panels = container.querySelectorAll('.panel');
+                const contentPanels = Array.from(panels).slice(1); // Exclude the first heading panel
+                const totalContentWidth = contentPanels.length * panels[0].offsetWidth; // Assuming panels have similar width
+                const scrollWidth = totalContentWidth - (window.innerWidth - panels[0].offsetWidth); // Calculate actual scroll distance
+
+                gsap.to(container, {
+                    x: () => -(container.scrollWidth - window.innerWidth),
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: section,
+                        start: "top top",
+                        end: () => `+=${container.scrollWidth - window.innerWidth}`,
+                        scrub: true,
+                        pin: true,
+                        invalidateOnRefresh: true,
+                        anticipatePin: 1
+                    }
+                });
             }
         });
+
     </script>
 </body>
 </html>
