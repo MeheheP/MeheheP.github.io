@@ -15,7 +15,6 @@
             --accent-color: #ffffff;
         }
 
-        /* Basic Setup & Scrollbar */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         body {
@@ -158,6 +157,8 @@
             margin-bottom: 2rem;
             padding-left: 5vw;
         }
+
+        /* Card Animations */
         .card {
             background: #111;
             padding: 2rem;
@@ -168,6 +169,11 @@
             flex-direction: column;
             justify-content: center;
             margin-bottom: 1rem;
+            transition: box-shadow 0.3s; /* Card Glow Animation */
+        }
+        .card:hover {
+            box-shadow: 0 0 30px 5px #00ffd0,
+                        0 0 10px 2px var(--accent-color);
         }
         .card-title {
             font-family: 'Anton', sans-serif;
@@ -204,6 +210,20 @@
             border: 1px solid #222;
         }
 
+        #bubble-container {
+          position: fixed;
+          pointer-events: none;
+          z-index: 0;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+        }
+        .bubble {
+          position: absolute;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.08);
+        }
 
         /* Footer */
         footer {
@@ -250,6 +270,9 @@
     <div id="preloader"><span class="loader-text">MEHUL PARASHAR</span></div>
     <div class="cursor"></div>
 
+    <!-- Floating bubbles background -->
+    <div id="bubble-container"></div>
+    
     <div class="main-container">
         <nav>
             <a href="#hero" class="nav-logo">Mehul Parashar</a>
@@ -372,7 +395,6 @@
             </div>
         </section>
 
-
         <footer>
             <h2>Get In Touch</h2>
             <p><a href="mailto:parasharmeh@gmail.com" class="link">parasharmeh@gmail.com</a></p>
@@ -403,9 +425,9 @@
             el.addEventListener('mouseout', () => cursor.classList.remove('cursor-grow'));
         });
 
-        // Horizontal Scroll for each section
         gsap.registerPlugin(ScrollTrigger);
 
+        // Horizontal Scroll for each section
         document.querySelectorAll(".horizontal-scroll-section").forEach(section => {
             let container = section.querySelector(".horizontal-scroll-container");
             if (container) {
@@ -424,6 +446,71 @@
                 });
             }
         });
+
+        // --- NEW ANIMATIONS BELOW ---
+
+        // 1. Text Reveal Animation (Section Headings)
+        document.querySelectorAll(".section-heading").forEach((heading) => {
+            gsap.from(heading, {
+                opacity: 0,
+                y: 50,
+                duration: 1,
+                scrollTrigger: {
+                    trigger: heading,
+                    start: "top 75%",
+                    toggleActions: "play none none none"
+                }
+            });
+        });
+
+        // 2. Skills Bounce-in Animation
+        gsap.from(".skill-item", {
+            opacity: 0,
+            scale: 0.5,
+            y: 40,
+            stagger: 0.13,
+            duration: 0.7,
+            ease: "back.out(1.7)",
+            scrollTrigger: {
+                trigger: ".skills-grid",
+                start: "top 85%"
+            }
+        });
+
+        // 3. Footer Contact Floating Animation
+        gsap.to("footer h2, footer p, .socials", {
+            y: 20,
+            repeat: -1,
+            yoyo: true,
+            duration: 2.5,
+            ease: "power1.inOut"
+        });
+
+        // 4. Hero Image Mouse Parallax
+        const heroImg = document.querySelector('.hero-img');
+        document.addEventListener('mousemove', (e) => {
+            const relX = (e.clientX / window.innerWidth - 0.5) * 20;
+            const relY = (e.clientY / window.innerHeight - 0.5) * 20;
+            heroImg.style.transform =
+              `translateX(-50%) translateY(-50%) scale(1.05) translate(${relX}px,${relY}px)`;
+        });
+
+        // 5. Floating Bubbles Background
+        for(let i=0; i<15; i++){
+          const bubble = document.createElement('div');
+          bubble.className = 'bubble';
+          bubble.style.width = bubble.style.height = `${14 + Math.random()*40}px`;
+          bubble.style.left = `${Math.random()*100}vw`;
+          bubble.style.top = `${Math.random()*95}vh`;
+          document.getElementById('bubble-container').appendChild(bubble);
+          gsap.to(bubble, {
+            y: -120,
+            repeat: -1,
+            duration: 15 + Math.random()*12,
+            ease: "sine.inOut",
+            delay: Math.random()*8
+          });
+        }
 
     </script>
 </body>
