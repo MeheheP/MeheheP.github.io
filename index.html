@@ -1,517 +1,306 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mehul Parashar | Data Science Portfolio</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #000000;
-            --primary-text: #ffffff;
-            --secondary-text: #a0a0a0;
-            --accent-color: #ffffff;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
-        body {
-            background-color: var(--bg-color);
-            color: var(--primary-text);
-            font-family: 'Inter', sans-serif;
-            cursor: none;
-            overflow-x: hidden;
-        }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #111; }
-        ::-webkit-scrollbar-thumb { background: #333; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
-
-        /* Custom Cursor */
-        .cursor {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--primary-text);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-            transition: width 0.3s, height 0.3s, background-color 0.3s;
-        }
-        .cursor-grow { width: 40px; height: 40px; background-color: rgba(255, 255, 255, 0.2); }
-
-        /* Preloader */
-        #preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-color);
-            z-index: 10000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-        }
-        #preloader.loaded { opacity: 0; visibility: hidden; }
-        .loader-text { font-family: 'Anton', sans-serif; font-size: 2rem; }
-
-        /* Navigation */
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 1.5rem 2.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            mix-blend-mode: difference;
-        }
-        .nav-logo, .nav-menu a {
-            color: var(--primary-text);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 1.1rem;
-        }
-        .nav-logo { font-weight: 700; }
-
-        /* Main Container */
-        .main-container {
-            opacity: 0;
-            transition: opacity 1s ease 0.5s;
-        }
-        .main-container.visible { opacity: 1; }
-
-        /* Hero Section */
-        #hero {
-            height: 100vh;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            overflow: hidden;
-            background-color: #333; /* Fallback for image load */
-        }
-        .hero-img {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            transform: translateX(-50%) translateY(-50%) scale(1.05);
-            opacity: 0.8;
-            object-fit: cover;
-            z-index: -2;
-            animation: zoomFade 20s infinite alternate ease-in-out;
-        }
-        @keyframes zoomFade {
-            0% { transform: translateX(-50%) translateY(-50%) scale(1.05); opacity: 0.8; }
-            100% { transform: translateX(-50%) translateY(-50%) scale(1.1); opacity: 0.7; }
-        }
-        #hero::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: -1;
-        }
-        .hero-content { z-index: 1; }
-        .hero-title {
-            font-family: 'Anton', sans-serif;
-            font-size: clamp(3rem, 12vw, 9rem);
-            line-height: 1;
-            text-transform: uppercase;
-        }
-
-        /* Horizontal Scroll Section */
-        .horizontal-scroll-section {
-            padding: 10vh 0;
-            overflow: hidden;
-        }
-        .horizontal-scroll-container {
-            width: fit-content;
-            display: flex;
-            will-change: transform;
-        }
-        .panel {
-            min-width: 70vw;
-            padding: 0 5vw;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .section-heading {
-            font-family: 'Anton', sans-serif;
-            font-size: clamp(2rem, 6vw, 4rem);
-            margin-bottom: 2rem;
-            padding-left: 5vw;
-        }
-
-        /* Card Animations */
-        .card {
-            background: #111;
-            padding: 2rem;
-            border-radius: 10px;
-            border: 1px solid #222;
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            margin-bottom: 1rem;
-            transition: box-shadow 0.3s; /* Card Glow Animation */
-        }
-        .card:hover {
-            box-shadow: 0 0 30px 5px #00ffd0,
-                        0 0 10px 2px var(--accent-color);
-        }
-        .card-title {
-            font-family: 'Anton', sans-serif;
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .card ul {
-            list-style: none;
-            padding-left: 0;
-            margin-top: 0.5rem;
-            color: var(--secondary-text);
-        }
-        .card ul li {
-            margin-bottom: 0.3rem;
-        }
-        .card .date {
-            color: var(--secondary-text);
-            font-size: 0.9em;
-            margin-bottom: 1em;
-            display: block;
-        }
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem;
-        }
-        .skill-item {
-            background: #1a1a1a;
-            padding: 1rem;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 0.9em;
-            color: var(--secondary-text);
-            border: 1px solid #222;
-        }
-
-        #bubble-container {
-          position: fixed;
-          pointer-events: none;
-          z-index: 0;
-          top: 0;
-          left: 0;
-          width: 100vw;
-          height: 100vh;
-        }
-        .bubble {
-          position: absolute;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.08);
-        }
-
-        /* Footer */
-        footer {
-            min-height: 50vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 4rem 2rem;
-        }
-        footer h2 {
-            font-family: 'Anton', sans-serif;
-            font-size: clamp(2rem, 8vw, 4rem);
-            margin-bottom: 1rem;
-        }
-        footer a {
-            color: var(--secondary-text);
-            text-decoration: none;
-            font-size: 1.2rem;
-            transition: color 0.3s;
-        }
-        footer a:hover { color: var(--primary-text); }
-        .socials { margin-top: 2rem; }
-        .socials a {
-            margin: 0 1rem;
-            font-size: 1.1rem;
-            color: var(--secondary-text);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        .socials a:hover { color: var(--primary-text); }
-
-        @media (max-width: 768px) {
-            nav { padding: 1rem 1.5rem; }
-            .hero-title { font-size: clamp(2.5rem, 15vw, 8rem); }
-            .panel { min-width: 90vw; }
-            .section-heading { font-size: clamp(2rem, 8vw, 4rem); padding-left: 1.5rem; }
-            footer h2 { font-size: clamp(1.5rem, 10vw, 3rem); }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mehul Parashar | Data Science Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --main-bg: #181f27;
+      --block-bg: #222d38;
+      --primary: #65e6c4;
+      --text-main: #ffffff;
+      --text-secondary: #a0b4c8;
+    }
+    body {
+      background: var(--main-bg);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      line-height: 1.65;
+    }
+    .wrapper {
+      max-width: 970px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2.5rem 0 2rem 0;
+    }
+    .avatar {
+      border-radius: 50%;
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      box-shadow: 0 6px 24px rgba(101,230,196,0.1);
+      border: 2px solid var(--primary);
+      background: var(--block-bg);
+    }
+    .intro {
+      flex: 1;
+      margin-left: 2rem;
+    }
+    .intro h1 {
+      font-size: 2.6rem;
+      margin: 0;
+      font-family: 'Anton', sans-serif;
+      letter-spacing: 0.5px;
+    }
+    .intro p {
+      margin-top: 0.6rem;
+      color: var(--text-secondary);
+      font-size: 1.15rem;
+    }
+    nav {
+      margin-top: 1.2rem;
+    }
+    nav a {
+      color: var(--primary);
+      text-decoration: none;
+      margin-right: 1.5rem;
+      font-weight: 700;
+      transition: color 0.2s;
+    }
+    nav a:hover {
+      color: var(--text-main);
+    }
+    section {
+      margin-top: 2.5rem;
+      padding: 2rem;
+      background: var(--block-bg);
+      border-radius: 15px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    section h2 {
+      font-family: 'Anton', sans-serif;
+      color: var(--primary);
+      font-size: 2rem;
+      margin-bottom: 1.2rem;
+      letter-spacing: 1px;
+    }
+    .projects, .experience, .education, .skills, .github-projects {
+      display: grid;
+      gap: 1.5rem;
+    }
+    .project, .job, .school, .gh-project {
+      background: rgba(255,255,255,0.02);
+      border-left: 5px solid var(--primary);
+      border-radius: 9px;
+      padding: 1rem 1.2rem;
+      transition: background 0.2s;
+    }
+    .project:hover, .job:hover, .school:hover, .gh-project:hover {
+      background: rgba(101,230,196,0.03);
+    }
+    .project-title, .job-title, .school-title, .gh-title {
+      font-weight: 700;
+      font-size: 1.22rem;
+      letter-spacing: 0.5px;
+    }
+    .project-desc, .job-desc, .school-desc, .gh-desc {
+      color: var(--text-secondary);
+      margin-top: 0.2rem;
+      font-size: 1rem;
+    }
+    .gh-link {
+      color: var(--primary);
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 1.05rem;
+      margin-top: 0.4rem;
+      display: inline-block;
+      transition: color 0.2s;
+    }
+    .gh-link:hover { color: var(--text-main);}
+    .skills-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-top: 0.7rem;
+    }
+    .skill-pill {
+      background: #151b21;
+      color: var(--primary);
+      font-weight: 700;
+      padding: 0.4rem 0.9rem;
+      border-radius: 18px;
+      font-size: 0.97rem;
+      letter-spacing: 0.8px;
+      margin-bottom: 0.4rem;
+      border: 1.5px solid var(--primary);
+      box-shadow: 0 1px 6px #242f3b33;
+    }
+    footer {
+      text-align: center;
+      margin: 2.5rem 0 1.7rem;
+      color: var(--text-secondary);
+      font-size: 1.07rem;
+    }
+    .footer-links {
+      margin-top: 1rem;
+    }
+    .footer-links a {
+      margin: 0 0.7rem;
+      color: var(--primary);
+      font-weight: 700;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover {
+      color: var(--text-main);
+    }
+    @media (max-width: 900px) {
+      .wrapper {
+        max-width: 98vw;
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.2rem;
+      }
+      .intro {
+        margin-left: 0;
+      }
+    }
+    @media (max-width:500px) {
+      section {
+        padding: 1rem 6px;
+      }
+      .avatar { width: 80px; height: 80px;}
+      .intro h1 { font-size: 1.65rem;}
+      nav { margin-top: 0.7rem;}
+      .project,.job,.school,.gh-project {padding:8px;}
+      footer {font-size:0.98rem;}
+    }
+  </style>
 </head>
 <body>
-    <div id="preloader"><span class="loader-text">MEHUL PARASHAR</span></div>
-    <div class="cursor"></div>
-
-    <!-- Floating bubbles background -->
-    <div id="bubble-container"></div>
-    
-    <div class="main-container">
+  <div class="wrapper">
+    <header>
+      <img src="images/mehul.jpg" alt="Mehul Parashar" class="avatar">
+      <div class="intro">
+        <h1>Mehul Parashar</h1>
+        <p>Data Scientist — Advanced Analytics | Sports & Census Data | Python | Purdue University</p>
         <nav>
-            <a href="#hero" class="nav-logo">Mehul Parashar</a>
-            <div class="nav-menu">
-                <a href="#work">Work</a>
-                <a href="#skills-section">Skills</a>
-                <a href="#education-section">Education</a>
-                <a href="#experience-section">Experience</a>
-            </div>
+          <a href="#projects">Projects</a>
+          <a href="#skills">Skills</a>
+          <a href="#education">Education</a>
+          <a href="#experience">Experience</a>
         </nav>
+      </div>
+    </header>
 
-        <section id="hero">
-            <img src="images/Mehul.jpg" alt="Mehul Parashar Photo" class="hero-img">
-            <div class="hero-content">
-                <h1 class="hero-title">Data Scientist</h1>
-            </div>
-        </section>
+    <section id="projects">
+      <h2>Selected Projects</h2>
+      <div class="projects">
+        <div class="project">
+          <div class="project-title">AI Health Chatbot</div>
+          <div class="project-desc">Developed an ML/NLP chatbot using BioBERT & GPT-2 for smart health assistance.</div>
+        </div>
+        <div class="project">
+          <div class="project-title">Climate Anomaly Detection</div>
+          <div class="project-desc">Built an ensemble model (87% accuracy) to identify weather anomalies for climate change analysis.</div>
+        </div>
+        <div class="project">
+          <div class="project-title">E-Commerce Sales Pipeline</div>
+          <div class="project-desc">Real-time sales data pipeline on AWS/Kafka with Tableau dashboards for forecasting.</div>
+        </div>
+        <div class="project">
+          <div class="project-title">Product Defect Detection</div>
+          <div class="project-desc">CNN with TF+Keras for QC, improving defect detection to 95% accuracy.</div>
+        </div>
+      </div>
+      <h2 style="margin-top:2.5rem;color:var(--primary);">GitHub Projects</h2>
+      <div class="github-projects">
+        <div class="gh-project">
+          <span class="gh-title">MeheheP.github.io</span>
+          <div class="gh-desc">Personal portfolio website repository</div>
+          <a class="gh-link" href="https://github.com/MeheheP/MeheheP.github.io" target="_blank">View on GitHub</a>
+        </div>
+        <div class="gh-project">
+          <span class="gh-title">Cary_Bike</span>
+          <div class="gh-desc">Analyzing bike routes using CPD crash data (Jupyter Notebook)</div>
+          <a class="gh-link" href="https://github.com/MeheheP/Cary_Bike" target="_blank">View on GitHub</a>
+        </div>
+        <div class="gh-project">
+          <span class="gh-title">GoCary_Bus_route_optimizatio</span>
+          <div class="gh-desc">Real-time & scheduled bus data for Cary/Triangle area, focusing on on-time performance and efficiency</div>
+          <a class="gh-link" href="https://github.com/MeheheP/GoCary_Bus_route_optimizatio" target="_blank">View on GitHub</a>
+        </div>
+        <div class="gh-project">
+          <span class="gh-title">Customer-Lifetime-Value-LTV-Fraud-Detection-Analysis</span>
+          <div class="gh-desc">Jupyter Notebook for Customer LTV and fraud detection analysis</div>
+          <a class="gh-link" href="https://github.com/MeheheP/Customer-Lifetime-Value-LTV-Fraud-Detection-Analysis" target="_blank">View on GitHub</a>
+        </div>
+      </div>
+    </section>
 
-        <section id="work" class="horizontal-scroll-section">
-            <div class="horizontal-scroll-container">
-                <div class="panel">
-                    <h2 class="section-heading">Selected Projects</h2>
-                </div>
-                <div class="panel">
-                    <div class="card">
-                        <h3 class="card-title">AI Health Chatbot</h3>
-                        <p style="color:var(--secondary-text);">Developed an ML/NLP chatbot using advanced models including BioBERT and GPT-2 to provide intelligent health assistance.</p>
-                    </div>
-                    <div class="card">
-                        <h3 class="card-title">Climate Anomaly Detection</h3>
-                        <p style="color:var(--secondary-text);">Built an ensemble model achieving 87% accuracy in identifying weather anomalies, enhancing climate change analysis.</p>
-                    </div>
-                </div>
-                <div class="panel">
-                    <div class="card">
-                        <h3 class="card-title">E-Commerce Sales Pipeline</h3>
-                        <p style="color:var(--secondary-text);">Constructed a real-time sales data pipeline using AWS and Kafka, enabling dynamic forecasting with Tableau dashboards.</p>
-                    </div>
-                    <div class="card">
-                        <h3 class="card-title">Product Defect Detection</h3>
-                        <p style="color:var(--secondary-text);">Implemented a CNN with TensorFlow and Keras to automate manufacturing QC, boosting defect detection accuracy to 95%.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <section id="skills">
+      <h2>Technical Skills</h2>
+      <div class="skills-list">
+        <div class="skill-pill">Python</div>
+        <div class="skill-pill">R</div>
+        <div class="skill-pill">SQL</div>
+        <div class="skill-pill">AWS</div>
+        <div class="skill-pill">Tableau</div>
+        <div class="skill-pill">Power BI</div>
+        <div class="skill-pill">Scikit-learn</div>
+        <div class="skill-pill">TensorFlow</div>
+        <div class="skill-pill">PyTorch</div>
+        <div class="skill-pill">Pandas</div>
+        <div class="skill-pill">NumPy</div>
+        <div class="skill-pill">XGBoost</div>
+        <div class="skill-pill">Kafka</div>
+        <div class="skill-pill">Docker</div>
+        <div class="skill-pill">Git & GitHub</div>
+      </div>
+    </section>
 
-        <section id="skills-section" class="horizontal-scroll-section">
-            <div class="horizontal-scroll-container">
-                <div class="panel">
-                    <h2 class="section-heading">Technical Skills</h2>
-                </div>
-                <div class="panel">
-                    <div class="skills-grid">
-                        <div class="skill-item">Python</div>
-                        <div class="skill-item">R</div>
-                        <div class="skill-item">SQL</div>
-                        <div class="skill-item">AWS</div>
-                        <div class="skill-item">Tableau</div>
-                        <div class="skill-item">Power BI</div>
-                        <div class="skill-item">Scikit-learn</div>
-                        <div class="skill-item">TensorFlow</div>
-                        <div class="skill-item">PyTorch</div>
-                        <div class="skill-item">Pandas</div>
-                        <div class="skill-item">NumPy</div>
-                        <div class="skill-item">XGBoost</div>
-                        <div class="skill-item">Kafka</div>
-                        <div class="skill-item">Docker</div>
-                        <div class="skill-item">Git & GitHub</div>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <section id="education">
+      <h2>Education</h2>
+      <div class="education">
+        <div class="school">
+          <span class="school-title">Westcliff University</span>
+          <div class="school-desc">MBA in Data Driven Decisions</div>
+        </div>
+        <div class="school">
+          <span class="school-title">Purdue University</span>
+          <div class="school-desc">MS in Computer Information Science</div>
+        </div>
+        <div class="school">
+          <span class="school-title">University of Mumbai</span>
+          <div class="school-desc">BSc in Computer Science</div>
+        </div>
+      </div>
+    </section>
 
-        <section id="education-section" class="horizontal-scroll-section">
-            <div class="horizontal-scroll-container">
-                <div class="panel">
-                    <h2 class="section-heading">Education</h2>
-                </div>
-                <div class="panel">
-                    <div class="card">
-                        <h3 class="card-title">Westcliff University</h3>
-                        <p style="color:var(--secondary-text);">MBA in Data Driven Decisions</p>
-                    </div>
-                    <div class="card">
-                        <h3 class="card-title">Purdue University</h3>
-                        <p style="color:var(--secondary-text);">MS in Computer Information Science</p>
-                    </div>
-                    <div class="card">
-                        <h3 class="card-title">University of Mumbai</h3>
-                        <p style="color:var(--secondary-text);">BSc in Computer Science</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <section id="experience">
+      <h2>Experience</h2>
+      <div class="experience">
+        <div class="job">
+          <span class="job-title">Lead Data Science Intern — Spotlist Inc.</span>
+          <div class="job-desc" style="font-size:0.97em;">July 2023 – March 2024 • Automated data cleaning pipelines, real-time AWS/Kafka streaming, and ETL optimization.</div>
+        </div>
+        <div class="job">
+          <span class="job-title">Junior Analyst (Data & Ops) — Dhakad Events & Entertainment</span>
+          <div class="job-desc" style="font-size:0.97em;">Aug 2019 – Jul 2021 • SQL automation, robust warehousing, reduced reporting effort and data inconsistencies.</div>
+        </div>
+      </div>
+    </section>
 
-        <section id="experience-section" class="horizontal-scroll-section">
-            <div class="horizontal-scroll-container">
-                <div class="panel">
-                    <h2 class="section-heading">Experience</h2>
-                </div>
-                <div class="panel">
-                    <div class="card">
-                        <h3 class="card-title">Lead Data Science Intern</h3>
-                        <span class="date">Spotlist Inc. | July 2023 – March 2024</span>
-                        <ul>
-                            <li>Reduced data collection time by 30% by building an automated cleaning pipeline.</li>
-                            <li>Engineered a real-time AWS/Kafka streaming architecture to enhance data reliability.</li>
-                            <li>Cut reporting latency by 50% through the design of optimized ETL workflows.</li>
-                        </ul>
-                    </div>
-                    <div class="card">
-                        <h3 class="card-title">Junior Analyst (Data & Ops)</h3>
-                        <span class="date">Dhakad Events & Entertainment | August 2019 - July 2021</span>
-                        <ul>
-                            <li>Reduced manual reporting effort by 35 hours per month via SQL automation.</li>
-                            <li>Decreased data inconsistencies by 15% by implementing robust data warehousing.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <footer>
-            <h2>Get In Touch</h2>
-            <p><a href="mailto:parasharmeh@gmail.com" class="link">parasharmeh@gmail.com</a></p>
-            <div class="socials">
-                <a href="https://linkedin.com/in/YOUR-LINKEDIN" target="_blank">LinkedIn</a>
-                <a href="https://github.com/MehParashar" target="_blank">GitHub</a>
-            </div>
-        </footer>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
-    <script>
-        // Preloader
-        window.addEventListener('load', () => {
-            const preloader = document.getElementById('preloader');
-            preloader.classList.add('loaded');
-            document.querySelector('.main-container').classList.add('visible');
-        });
-
-        // Custom Cursor
-        const cursor = document.querySelector('.cursor');
-        document.addEventListener('mousemove', e => {
-            cursor.setAttribute("style", "top: " + (e.pageY) + "px; left: " + (e.pageX) + "px;");
-        });
-        document.querySelectorAll('a, button, .card, .skill-item').forEach(el => {
-            el.addEventListener('mouseover', () => cursor.classList.add('cursor-grow'));
-            el.addEventListener('mouseout', () => cursor.classList.remove('cursor-grow'));
-        });
-
-        gsap.registerPlugin(ScrollTrigger);
-
-        // Horizontal Scroll for each section
-        document.querySelectorAll(".horizontal-scroll-section").forEach(section => {
-            let container = section.querySelector(".horizontal-scroll-container");
-            if (container) {
-                gsap.to(container, {
-                    x: () => -(container.scrollWidth - window.innerWidth),
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: section,
-                        start: "top top",
-                        end: () => `+=${container.scrollWidth - window.innerWidth}`,
-                        scrub: true,
-                        pin: true,
-                        invalidateOnRefresh: true,
-                        anticipatePin: 1
-                    }
-                });
-            }
-        });
-
-        // --- NEW ANIMATIONS BELOW ---
-
-        // 1. Text Reveal Animation (Section Headings)
-        document.querySelectorAll(".section-heading").forEach((heading) => {
-            gsap.from(heading, {
-                opacity: 0,
-                y: 50,
-                duration: 1,
-                scrollTrigger: {
-                    trigger: heading,
-                    start: "top 75%",
-                    toggleActions: "play none none none"
-                }
-            });
-        });
-
-        // 2. Skills Bounce-in Animation
-        gsap.from(".skill-item", {
-            opacity: 0,
-            scale: 0.5,
-            y: 40,
-            stagger: 0.13,
-            duration: 0.7,
-            ease: "back.out(1.7)",
-            scrollTrigger: {
-                trigger: ".skills-grid",
-                start: "top 85%"
-            }
-        });
-
-        // 3. Footer Contact Floating Animation
-        gsap.to("footer h2, footer p, .socials", {
-            y: 20,
-            repeat: -1,
-            yoyo: true,
-            duration: 2.5,
-            ease: "power1.inOut"
-        });
-
-        // 4. Hero Image Mouse Parallax
-        const heroImg = document.querySelector('.hero-img');
-        document.addEventListener('mousemove', (e) => {
-            const relX = (e.clientX / window.innerWidth - 0.5) * 20;
-            const relY = (e.clientY / window.innerHeight - 0.5) * 20;
-            heroImg.style.transform =
-              `translateX(-50%) translateY(-50%) scale(1.05) translate(${relX}px,${relY}px)`;
-        });
-
-        // 5. Floating Bubbles Background
-        for(let i=0; i<15; i++){
-          const bubble = document.createElement('div');
-          bubble.className = 'bubble';
-          bubble.style.width = bubble.style.height = `${14 + Math.random()*40}px`;
-          bubble.style.left = `${Math.random()*100}vw`;
-          bubble.style.top = `${Math.random()*95}vh`;
-          document.getElementById('bubble-container').appendChild(bubble);
-          gsap.to(bubble, {
-            y: -120,
-            repeat: -1,
-            duration: 15 + Math.random()*12,
-            ease: "sine.inOut",
-            delay: Math.random()*8
-          });
-        }
-
-    </script>
+    <footer>
+      <strong>Contact:</strong> <a href="mailto:parasharmeh@gmail.com">parasharmeh@gmail.com</a>
+      <div class="footer-links">
+        <a href="https://github.com/MeheheP" target="_blank">GitHub</a>
+        <a href="https://www.linkedin.com/in/mehul-parashar/" target="_blank">LinkedIn</a>
+      </div>
+      <div style="margin-top:0.7rem;">&copy; 2025 Mehul Parashar</div>
+    </footer>
+  </div>
 </body>
 </html>
