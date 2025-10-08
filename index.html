@@ -93,7 +93,7 @@
         .navbar nav a {
             text-decoration: none;
             color: var(--text-color);
-            margin-left: 25px;
+            margin-left: 20px;
             font-weight: 500;
         }
         .navbar nav .btn-contact {
@@ -208,6 +208,45 @@
         }
         .capability-card h4 { font-size: 1.2rem; }
         .capability-card p { color: var(--text-color); }
+        
+        /* --- Certifications Section --- */
+        #certifications { background-color: var(--card-bg); }
+        .certifications-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .certification-card {
+            background-color: var(--bg-color);
+            border: 1px solid var(--card-border-color);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .certification-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(100, 255, 218, 0.1);
+        }
+        .cert-logo {
+            height: 50px;
+            margin-bottom: 20px;
+        }
+        .cert-logo svg {
+            height: 100%;
+            width: auto;
+            fill: #a8b2d1;
+        }
+        .certification-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        .certification-card p {
+            color: #8892b0;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
 
         /* --- Timeline Sections (Experience & Education) --- */
         #education, #experience { background-color: var(--card-bg); }
@@ -405,6 +444,7 @@
                 <a href="#projects">Projects</a>
                 <a href="#experience">Experience</a>
                 <a href="#capabilities">Skills</a>
+                <a href="#certifications">Certifications</a>
                 <a href="#education">Education</a>
                 <a href="#contact" class="btn-contact">Contact</a>
             </nav>
@@ -572,6 +612,48 @@
                     <div class="capability-card">
                         <h4>Machine Learning & Engineering</h4>
                         <p>Scikit-learn, TensorFlow, PyTorch, XGBoost, NLP, Docker, Git & GitHub.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CERTIFICATIONS SECTION -->
+        <section id="certifications">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Certifications & Credentials</h2>
+                </div>
+                <div class="certifications-grid">
+                    <!-- Google -->
+                    <div class="certification-card">
+                        <div class="cert-logo">
+                            <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Google</title><path d="M12.48 10.92v3.28h7.84c-.24 1.84-.85 3.18-1.73 4.1-1.02 1.02-2.3 1.62-3.85 1.62-3.35 0-6.22-2.77-6.22-6.22s2.87-6.22 6.22-6.22c1.96 0 3.25.79 4.1 1.56l2.38-2.38C18.27.11 15.48 0 12.48 0 5.88 0 .04 5.88.04 12.48s5.84 12.48 12.44 12.48c3.23 0 5.45-1.08 7.2-2.82 1.82-1.82 2.66-4.29 2.66-7.82V10.92h-9.86z"/></svg>
+                        </div>
+                        <h4>Google Advanced Data Analytics</h4>
+                        <p>Issued by Google</p>
+                    </div>
+                    <div class="certification-card">
+                        <div class="cert-logo">
+                           <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Google</title><path d="M12.48 10.92v3.28h7.84c-.24 1.84-.85 3.18-1.73 4.1-1.02 1.02-2.3 1.62-3.85 1.62-3.35 0-6.22-2.77-6.22-6.22s2.87-6.22 6.22-6.22c1.96 0 3.25.79 4.1 1.56l2.38-2.38C18.27.11 15.48 0 12.48 0 5.88 0 .04 5.88.04 12.48s5.84 12.48 12.44 12.48c3.23 0 5.45-1.08 7.2-2.82 1.82-1.82 2.66-4.29 2.66-7.82V10.92h-9.86z"/></svg>
+                        </div>
+                        <h4>Google Business Intelligence</h4>
+                        <p>Issued by Google</p>
+                    </div>
+                     <!-- IBM -->
+                    <div class="certification-card">
+                        <div class="cert-logo">
+                            <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>IBM</title><path d="M12 0L3.429 2.121v5.165L0 9.407v5.186l3.429 2.121v5.165L12 24l8.571-2.121v-5.165L24 14.593V9.407l-3.429-2.121V2.121zm-1.646 19.332H4.821v-2.85h5.533zm0-4.285H4.821v-2.85h5.533zm0-4.286H4.821V7.91h5.533zm8.358 8.571h-5.534v-2.85h5.534zm0-4.285h-5.534v-2.85h5.534zm0-4.286h-5.534V7.91h5.534z"/></svg>
+                        </div>
+                        <h4>IBM Data Science</h4>
+                        <p>Issued by IBM</p>
+                    </div>
+                    <!-- Microsoft -->
+                    <div class="certification-card">
+                        <div class="cert-logo">
+                            <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Microsoft</title><path d="M0 0h11.4v11.4H0V0zm12.6 0H24v11.4H12.6V0zM0 12.6h11.4V24H0V12.6zm12.6 12.6H24V24H12.6v-11.4z"/></svg>
+                        </div>
+                        <h4>Azure Data Fundamentals</h4>
+                        <p>Issued by Microsoft</p>
                     </div>
                 </div>
             </div>
