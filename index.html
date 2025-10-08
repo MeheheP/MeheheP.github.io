@@ -145,7 +145,7 @@
 
         /* --- Projects Section --- */
         .section-header { text-align: center; margin-bottom: 50px; }
-        .section-header p { max-width: 600px; margin: 1rem auto 0 auto; color: #555; }
+        .section-header p { max-width: 600px; margin: 1rem auto 0 auto; color: #8892b0; }
         .projects-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -162,7 +162,7 @@
         }
         .project-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 25px rgba(100, 255, 218, 0.1);
         }
         .project-image-placeholder {
             height: 220px;
@@ -209,8 +209,10 @@
         .capability-card h4 { font-size: 1.2rem; }
         .capability-card p { color: var(--text-color); }
 
-        /* --- Education Timeline Section --- */
-        #education { background-color: var(--card-bg); }
+        /* --- Timeline Sections (Experience & Education) --- */
+        #education, #experience { background-color: var(--card-bg); }
+        #experience { background-color: var(--bg-color); }
+
         .timeline {
             position: relative;
             max-width: 800px;
@@ -278,6 +280,28 @@
             font-weight: 500;
             color: var(--accent-color);
             font-size: 0.9rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .timeline-content ul {
+            list-style: none;
+            padding-left: 20px;
+            margin-top: 0;
+            text-align: left;
+        }
+        .timeline-content li {
+            position: relative;
+            padding-left: 5px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        .timeline-content li::before {
+            content: '▹'; /* Use a triangle as a custom bullet */
+            position: absolute;
+            left: -20px;
+            color: var(--accent-color);
+            font-size: 1rem;
+            line-height: 1.6;
         }
 
         /* --- Contact Section --- */
@@ -379,6 +403,7 @@
             <div class="logo">Mehul Parashar</div>
             <nav>
                 <a href="#projects">Projects</a>
+                <a href="#experience">Experience</a>
                 <a href="#capabilities">Skills</a>
                 <a href="#education">Education</a>
                 <a href="#contact" class="btn-contact">Contact</a>
@@ -489,6 +514,45 @@
                 </div>
             </div>
         </section>
+        
+        <!-- WORK EXPERIENCE TIMELINE SECTION -->
+        <section id="experience">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Work Experience</h2>
+                </div>
+                <div class="timeline">
+                    <!-- Item 1: Spotlist -->
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3>Lead Data Science Intern</h3>
+                            <p>Spotlist Inc. (New Jersey, USA)</p>
+                            <span class="timeline-date">July 2023 – March 2024</span>
+                            <ul>
+                                <li>Implemented a streamlined data pipeline leveraging pandas and Transformers libraries to automate data cleaning, reducing data collection time by 30%.</li>
+                                <li>Engineered real-time data pipelines leveraging AWS services (S3, Lambda, Kinesis) and Apache Kafka for event-driven data streaming.</li>
+                                <li>Developed interactive dashboards using Plotly Dash and Bokeh to visualize key user demographics.</li>
+                                <li>Monitored and optimized cloud infrastructure (AWS EC2, S3, RDS) for performance and cost efficiency.</li>
+                            </ul>
+                        </div>
+                    </div>
+                     <!-- Item 2: Dhakad -->
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3>Junior Analyst (Data & Operations)</h3>
+                            <p>Dhakad Events and Entertainment (Mumbai, India)</p>
+                            <span class="timeline-date">August 2019 - July 2021</span>
+                            <ul>
+                                <li>Standardized data management protocols for tracking celebrity endorsements, film revenue, and social media engagement.</li>
+                                <li>Developed SQL-based reporting solutions, reducing manual effort by 35 hours per month.</li>
+                                <li>Assisted in data warehousing and governance initiatives, reducing data inconsistencies by 15%.</li>
+                                <li>Created automated dashboards using Power BI and Tableau to track key entertainment industry trends, improving decision-making speed by 25%.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- CORE CAPABILITIES SECTION -->
         <section id="capabilities">
@@ -580,5 +644,4 @@
 
 </body>
 </html>
-
 
