@@ -1,347 +1,406 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mehul Parashar | Data Science Portfolio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet"/>
   <style>
-    :root {
-      --main-bg: #181f27;
-      --block-bg: #222d38;
-      --primary: #65e6c4;
-      --text-main: #ffffff;
-      --text-secondary: #a0b4c8;
-      --card-fade: 40px;
-    }
     body {
-      background: var(--main-bg);
-      color: var(--text-main);
-      font-family: 'Inter', sans-serif;
-      margin: 0;
+      background: linear-gradient(120deg, #14171a 0%, #1e2240 100%);
       min-height: 100vh;
-      line-height: 1.65;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      color: #f1f4fb;
       overflow-x: hidden;
+      position: relative;
     }
-    .wrapper {
-      max-width: 970px;
-      margin: 0 auto;
-      padding: 0 16px;
+    .animated-bg {
+      pointer-events: none;
+      position: fixed;
+      z-index: 0;
+      width: 100vw; height: 100vh; left:0; top:0;
+      overflow: hidden;
     }
-    header {
+    .bubble {
+      position: absolute;
+      bottom: -150px;
+      border-radius: 50%;
+      opacity: 0.25;
+      animation: bubbleUp 25s linear infinite;
+    }
+    .bubble1 { left: 16vw; width: 110px; height: 110px; background: #65e6c4; animation-delay: 0s;}
+    .bubble2 { left: 36vw; width: 70px; height: 70px; background: #45bff0; animation-delay: 10s;}
+    .bubble3 { left: 60vw; width: 85px; height: 85px; background: #eb367f; animation-delay: 5s;}
+    .bubble4 { left: 77vw; width: 130px; height: 130px; background: #f8ff60; animation-delay: 13s; opacity:0.15;}
+    @keyframes bubbleUp {
+      to { bottom: 110vh; transform: translateY(-30px) scale(1.15);}
+    }
+    .container {
+      display: flex;
+      min-height: 100vh;
+      z-index: 1;
+      position: relative;
+    }
+    .sidebar {
+      background: rgba(24,31,39,0.97);
+      box-shadow: 0 0 18px #75e9e744;
+      width: 290px;
+      min-width: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 36px 16px 36px 16px;
+      position: relative;
+      z-index: 2;
+    }
+    .photo-outer {
+      width: 132px;
+      height: 132px;
+      background: linear-gradient(135deg, #65e6c4 20%, #45bff0 40%, #222d38 70%);
+      border-radius: 50%;
+      padding: 4px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 2.5rem 0 2rem 0;
-    }
-    .avatar {
-      border-radius: 50%;
-      width: 120px;
-      height: 120px;
-      object-fit: cover;
-      box-shadow: 0 6px 24px rgba(101,230,196,0.18);
-      border: 2.2px solid var(--primary);
-      background: var(--block-bg);
-      transition: transform 0.3s;
-    }
-    .avatar:hover {
-      transform: scale(1.05) rotate(-2deg);
-      box-shadow: 0 12px 40px rgba(101,230,196,0.30);
-    }
-    .intro {
-      flex: 1;
-      margin-left: 2rem;
-    }
-    .intro h1 {
-      font-size: 2.6rem;
-      margin: 0;
-      font-family: 'Anton', sans-serif;
-      letter-spacing: 0.5px;
-      color: var(--primary);
-      background: linear-gradient(90deg,var(--primary),#45bff0 55%);
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .intro p {
-      margin-top: 0.6rem;
-      color: var(--text-secondary);
-      font-size: 1.15rem;
-    }
-    nav {
-      margin-top: 1.2rem;
-      animation: fadeIn 1s 0.8s both;
-    }
-    nav a {
-      color: var(--primary);
-      text-decoration: none;
-      margin-right: 1.5rem;
-      font-weight: 700;
-      transition: color 0.2s;
-    }
-    nav a:hover {
-      color: var(--text-main);
-    }
-    section {
-      margin-top: 2.5rem;
-      padding: 2rem;
-      background: var(--block-bg);
-      border-radius: 15px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-      animation: fadeInUp 1s both;
-    }
-    section h2 {
-      font-family: 'Anton', sans-serif;
-      color: var(--primary);
-      font-size: 2rem;
+      justify-content: center;
       margin-bottom: 1.2rem;
+      box-shadow: 0 8px 40px #65e6c455;
+      animation: photoFloat 3.9s ease-in-out infinite alternate;
+    }
+    @keyframes photoFloat {
+      0% { transform: translateY(-8px) scale(1);}
+      50% { transform: translateY(8px) scale(1.025);}
+      100% { transform: translateY(-6px) scale(1);}
+    }
+    .photo-inner {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: #191c21;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content:center;
+    }
+    .photo-inner img {
+      width: 120px; height: 120px; object-fit: cover;
+      border-radius: 50%;
+      filter: brightness(1.08) saturate(0.98);
+    }
+    .sidebar h1 {
+      margin: 0 0 0.5rem 0;
+      font-size: 2.1rem;
+      letter-spacing: 1.2px;
+      font-family: 'Barlow', sans-serif;
+      color: #65e6c4;
+      text-align: center;
+    }
+    .sidebar p {
+      color: #b4dbee;
+      margin: 0 0 24px 0;
+      text-align: center;
+      font-size: 1.07rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+    .side-nav {
+      margin-top: 18px;
+      width: 100%;
+    }
+    .side-nav a {
+      display: block;
+      padding: 12px 12px;
+      border-radius: 7px;
+      margin-bottom: 7px;
+      text-decoration: none;
+      font-weight: bold;
+      color: #a0e8ff;
+      background: none;
+      font-size: 1.05rem;
+      transition: background 0.22s, color 0.18s;
+    }
+    .side-nav a:hover, .side-nav a:focus {
+      background: linear-gradient(90deg,#65e6c4 20%, #45bff0 90%);
+      color: #16181d;
+    }
+    .sidebar .side-footer {
+      margin-top: auto;
+      padding-top: 18px;
+      text-align: center;
+      font-size: 1.01rem;
+      color: #b4dbee;
+    }
+    .side-footer a {
+      color: #45bff0;
+      font-weight: bold;
+      text-decoration: none;
+      margin: 0 7px;
+    }
+    .main-content {
+      flex: 1;
+      padding: 52px 34px 24px 34px;
+      max-width: 900px;
+      margin: 0 auto;
+      z-index: 2;
+      position: relative;
+      animation: fadeIn 1.2s;
+    }
+    .section-block {
+      margin-bottom: 1.7rem;
+      background: rgba(34,45,56,0.87);
+      border-radius: 17px;
+      box-shadow: 0 2px 16px #41a7fc13;
+      padding: 2.1rem 2rem 1.6rem 2rem;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(3px);
+      border: 1.5px solid #232736;
+      animation: blockUp 1.2s both;
+    }
+    .section-block h2 {
+      margin-top: 0;
+      font-size: 1.45rem;
       letter-spacing: 1px;
+      font-family: 'Barlow', sans-serif;
+      color: #f8ff60;
+      margin-bottom: 1.25rem;
     }
-
-    /* Card Animation Styles */
-    .projects, .github-projects {
-      display: grid;
-      gap: 1.5rem;
+    .projects-grid, .github-grid, .skill-grid, .edu-grid, .exp-grid {
+      display: grid; gap: 1.2rem;
     }
-    .project, .gh-project {
-      background: rgba(255,255,255,0.03);
-      border-left: 5px solid var(--primary);
-      border-radius: 9px;
-      padding: 1rem 1.2rem;
-      box-shadow: 0 2px 10px rgba(101,230,196,0.07);
-      opacity: 0;
-      transform: translateY(var(--card-fade));
-      animation: fadeInUpCard 0.85s forwards;
+    .project-card, .gh-card {
+      background: rgba(36, 56, 64, 0.9);
+      border-radius: 10px;
+      padding: 1.2rem 1rem 1.1rem 1.1rem;
+      box-shadow: 0 4px 26px #41a7fc19;
+      transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+      position: relative;
+      border-left: 6px solid #65e6c4;
+      opacity: 0.98;
     }
-    .project:nth-child(1), .gh-project:nth-child(1) { animation-delay: 0.14s;}
-    .project:nth-child(2), .gh-project:nth-child(2) { animation-delay: 0.28s;}
-    .project:nth-child(3), .gh-project:nth-child(3) { animation-delay: 0.42s;}
-    .project:nth-child(4), .gh-project:nth-child(4) { animation-delay: 0.56s;}
+    .project-card:hover, .gh-card:hover {
+      transform: scale(1.025) translateY(-4px) rotate(-0.6deg);
+      background: rgba(36,56,64,0.975);
+      z-index: 2;
+      box-shadow: 0 12px 36px #65e6c410;
+    }
     .project-title, .gh-title {
-      font-weight: 700;
-      font-size: 1.22rem;
-      letter-spacing: 0.5px;
+      font-size: 1.18rem;
+      font-weight: bold;
+      color: #65e6c4;
+      margin-bottom: 0.16rem;
+      letter-spacing: 0.3px;
     }
     .project-desc, .gh-desc {
-      color: var(--text-secondary);
-      margin-top: 0.2rem;
+      color: #d0e5f2;
+      margin-bottom: 0.24rem;
       font-size: 1rem;
     }
     .gh-link {
-      color: var(--primary);
-      font-weight: 700;
+      color: #f8ff60;
+      font-size: 0.99em;
       text-decoration: none;
-      font-size: 1.05rem;
-      margin-top: 0.4rem;
-      display: inline-block;
-      transition: color 0.22s;
+      font-weight: bold;
+      transition: color 0.18s;
     }
-    .gh-link:hover { color: var(--text-main);}
-    .skills-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-      margin-top: 0.7rem;
+    .gh-link:hover { color: #65e6c4;}
+    .skill-grid {
+      display: flex; flex-wrap: wrap; gap: 0.75rem;
     }
     .skill-pill {
-      background: #151b21;
-      color: var(--primary);
+      background: linear-gradient(90deg,#242b37 60%,#65e6c4 140%);
+      color: #f8ff60;
       font-weight: 700;
-      padding: 0.4rem 0.9rem;
+      padding: 0.47rem 1.15rem;
       border-radius: 18px;
-      font-size: 0.97rem;
-      letter-spacing: 0.8px;
-      margin-bottom: 0.4rem;
-      border: 1.5px solid var(--primary);
-      box-shadow: 0 1px 6px #242f3b33;
-      transition: background 0.2s;
+      font-size: 1.01rem;
+      border: none;
+      box-shadow: 0 1px 8px #45bff055;
+      letter-spacing: 0.5px;
     }
-    .skill-pill:hover { background: var(--primary); color: var(--block-bg);}
-    .education, .experience {
-      display: grid;
-      gap: 1rem;
+    .edu-grid, .exp-grid { gap: 1.05rem;}
+    .school {
+      font-weight: bold;
+      color: #eb367f;
+      font-size: 1.09rem;
     }
-    .school, .job {
-      background: rgba(255,255,255,0.02);
-      border-radius: 9px;
-      padding: 1rem;
-      box-shadow: 0 1px 5px #18232b29;
-      transition: box-shadow .3s, background .2s;
+    .school-degree, .job-role { color:#b4dbee;font-weight:400;font-size:1.01rem;}
+    .job-company {color:#65e6c4;font-weight:700;}
+    .exp-grid .job { margin-bottom:0.25rem;}
+    .job {
+      background: rgba(36,56,64,0.86);
+      border-radius: 8px;
+      padding: 0.8rem 0.95rem 0.5rem 0.95rem;
+      box-shadow: 0 1px 5px #65e6c422;
+      margin-bottom: 0.18rem;
     }
-    .school:hover, .job:hover { box-shadow: 0 6px 14px #45bff044;
-      background:rgba(101,230,196,0.03);}
-    .school-title, .job-title { font-weight:700;font-size:1.1rem;}
-    .school-desc, .job-desc { color: var(--text-secondary);font-size:0.98em;}
-    footer {
-      text-align: center;
-      margin: 2.5rem 0 1.7rem;
-      color: var(--text-secondary);
-      font-size: 1.07rem;
-      animation: fadeIn 1s 1.2s both;
-    }
-    .footer-links {
-      margin-top: 1rem;
-    }
-    .footer-links a {
-      margin: 0 0.7rem;
-      color: var(--primary);
-      font-weight: 700;
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .footer-links a:hover {
-      color: var(--text-main);
+    .highlight {
+      color:#f8ff60;
+      font-weight: 600;
+      background: #65e6c435;
+      border-radius: 4px;
+      padding: 1px 5px 1px 5px;
+      margin-left:3px;
     }
     @media (max-width: 900px) {
-      .wrapper { max-width: 98vw;}
-      header { flex-direction: column; align-items: flex-start;gap: 1.2rem;}
-      .intro { margin-left: 0;}
+      .container { flex-direction: column;}
+      .sidebar { flex-direction: row;width:100%;border-radius: 0 0 23px 23px;min-width:unset;padding:22px;}
+      .photo-outer { margin-right: 24px;}
+      .main-content { padding: 16px 6px;}
     }
-    @media (max-width:500px) {
-      section { padding: 1rem 6px;}
-      .avatar { width: 80px; height: 80px;}
-      .intro h1 { font-size: 1.65rem;}
-      nav { margin-top: 0.7rem;}
-      .project,.job,.school,.gh-project {padding:8px;}
-      footer {font-size:0.98rem;}
-    }
-
-    /* Animations */
-    @keyframes fadeInUp {
-      0% { opacity: 0; transform: translateY(40px);}
-      100% { opacity: 1; transform: translateY(0);}
+    @media (max-width:540px) {
+      .sidebar {padding:10px;}
+      .side-nav a {font-size:0.97rem;}
+      .main-content {padding:10px;}
+      .section-block {padding:1rem;}
     }
     @keyframes fadeIn {
       from { opacity: 0;}
       to { opacity: 1;}
     }
-    @keyframes fadeInUpCard {
-      to { opacity: 1; transform: translateY(0);}
+    @keyframes blockUp {
+      from { opacity:0;transform:translateY(40px);}
+      to   { opacity:1;transform:translateY(0);}
     }
   </style>
 </head>
 <body>
-  <div class="wrapper">
-    <header>
-      <img src="images/mehul.jpg" alt="Mehul Parashar" class="avatar">
-      <div class="intro">
-        <h1>Mehul Parashar</h1>
-        <p>Data Scientist — Advanced Analytics | Sports & Census Data | Python | Purdue University</p>
-        <nav>
-          <a href="#projects">Projects</a>
-          <a href="#skills">Skills</a>
-          <a href="#education">Education</a>
-          <a href="#experience">Experience</a>
-        </nav>
-      </div>
-    </header>
-
-    <section id="projects">
-      <h2>Selected Projects</h2>
-      <div class="projects">
-        <div class="project">
-          <div class="project-title">AI Health Chatbot</div>
-          <div class="project-desc">Developed an ML/NLP chatbot using BioBERT & GPT-2 for smart health assistance.</div>
-        </div>
-        <div class="project">
-          <div class="project-title">Climate Anomaly Detection</div>
-          <div class="project-desc">Ensemble model (87% accuracy) for analyzing weather anomalies and climate change.</div>
-        </div>
-        <div class="project">
-          <div class="project-title">E-Commerce Sales Pipeline</div>
-          <div class="project-desc">Real-time AWS+Kafka sales pipeline with Tableau dashboards for forecasting.</div>
-        </div>
-        <div class="project">
-          <div class="project-title">Product Defect Detection</div>
-          <div class="project-desc">CNN (TF/Keras) for QC, boosting defect detection to 95% accuracy.</div>
+  <div class="animated-bg">
+    <div class="bubble bubble1"></div>
+    <div class="bubble bubble2"></div>
+    <div class="bubble bubble3"></div>
+    <div class="bubble bubble4"></div>
+  </div>
+  <div class="container">
+    <!-- SIDEBAR / CARD -->
+    <aside class="sidebar">
+      <div class="photo-outer">
+        <div class="photo-inner">
+          <img src="images/mehul.jpg" alt="Mehul Parashar"/>
         </div>
       </div>
-      <h2 style="margin-top:2.5rem;color:var(--primary);">GitHub Projects</h2>
-      <div class="github-projects">
-        <div class="gh-project">
-          <span class="gh-title">MeheheP.github.io</span>
-          <div class="gh-desc">Personal portfolio website repository</div>
-          <a class="gh-link" href="https://github.com/MeheheP/MeheheP.github.io" target="_blank">View on GitHub</a>
-        </div>
-        <div class="gh-project">
-          <span class="gh-title">Cary_Bike</span>
-          <div class="gh-desc">Analyzing bike routes using CPD crash data (Jupyter Notebook)</div>
-          <a class="gh-link" href="https://github.com/MeheheP/Cary_Bike" target="_blank">View on GitHub</a>
-        </div>
-        <div class="gh-project">
-          <span class="gh-title">GoCary_Bus_route_optimizatio</span>
-          <div class="gh-desc">Bus data analysis for Cary/Triangle: on-time performance and efficiency</div>
-          <a class="gh-link" href="https://github.com/MeheheP/GoCary_Bus_route_optimizatio" target="_blank">View on GitHub</a>
-        </div>
-        <div class="gh-project">
-          <span class="gh-title">Customer-Lifetime-Value-LTV-Fraud-Detection-Analysis</span>
-          <div class="gh-desc">Jupyter Notebook for Customer LTV & fraud detection analysis</div>
-          <a class="gh-link" href="https://github.com/MeheheP/Customer-Lifetime-Value-LTV-Fraud-Detection-Analysis" target="_blank">View on GitHub</a>
-        </div>
-      </div>
-    </section>
-
-    <section id="skills">
-      <h2>Technical Skills</h2>
-      <div class="skills-list">
-        <div class="skill-pill">Python</div>
-        <div class="skill-pill">R</div>
-        <div class="skill-pill">SQL</div>
-        <div class="skill-pill">AWS</div>
-        <div class="skill-pill">Tableau</div>
-        <div class="skill-pill">Power BI</div>
-        <div class="skill-pill">Scikit-learn</div>
-        <div class="skill-pill">TensorFlow</div>
-        <div class="skill-pill">PyTorch</div>
-        <div class="skill-pill">Pandas</div>
-        <div class="skill-pill">NumPy</div>
-        <div class="skill-pill">XGBoost</div>
-        <div class="skill-pill">Kafka</div>
-        <div class="skill-pill">Docker</div>
-        <div class="skill-pill">Git & GitHub</div>
-      </div>
-    </section>
-
-    <section id="education">
-      <h2>Education</h2>
-      <div class="education">
-        <div class="school">
-          <span class="school-title">Westcliff University</span>
-          <div class="school-desc">MBA in Data Driven Decisions</div>
-        </div>
-        <div class="school">
-          <span class="school-title">Purdue University</span>
-          <div class="school-desc">MS in Computer Information Science</div>
-        </div>
-        <div class="school">
-          <span class="school-title">University of Mumbai</span>
-          <div class="school-desc">BSc in Computer Science</div>
-        </div>
-      </div>
-    </section>
-
-    <section id="experience">
-      <h2>Experience</h2>
-      <div class="experience">
-        <div class="job">
-          <span class="job-title">Lead Data Science Intern — Spotlist Inc.</span>
-          <div class="job-desc" style="font-size:0.97em;">July 2023 – March 2024 • Automated data cleaning, AWS/Kafka streaming, ETL optimization.</div>
-        </div>
-        <div class="job">
-          <span class="job-title">Junior Analyst (Data & Ops) — Dhakad Events & Entertainment</span>
-          <div class="job-desc" style="font-size:0.97em;">Aug 2019 – Jul 2021 • SQL automation, warehousing, reduced reporting effort and inconsistencies.</div>
-        </div>
-      </div>
-    </section>
-
-    <footer>
-      <strong>Contact:</strong> <a href="mailto:parasharmeh@gmail.com">parasharmeh@gmail.com</a>
-      <div class="footer-links">
+      <h1>Mehul Parashar</h1>
+      <p>Data Scientist<br>
+        <span class="highlight">Analytics • Sports & Census • Python • Purdue</span>
+      </p>
+      <nav class="side-nav">
+        <a href="#projects">Projects</a>
+        <a href="#github">GitHub</a>
+        <a href="#skills">Skills</a>
+        <a href="#edu">Education</a>
+        <a href="#exp">Experience</a>
+      </nav>
+      <div class="side-footer">
+        <a href="mailto:parasharmeh@gmail.com">Email</a>
         <a href="https://github.com/MeheheP" target="_blank">GitHub</a>
         <a href="https://www.linkedin.com/in/mehul-parashar/" target="_blank">LinkedIn</a>
+        <div style="margin-top:12px;">&copy; 2025 Mehul Parashar</div>
       </div>
-      <div style="margin-top:0.7rem;">&copy; 2025 Mehul Parashar</div>
-    </footer>
+    </aside>
+
+    <main class="main-content">
+      <section id="projects" class="section-block">
+        <h2>Selected Projects</h2>
+        <div class="projects-grid">
+          <div class="project-card">
+            <div class="project-title">AI Health Chatbot</div>
+            <div class="project-desc">NLP chatbot (BioBERT, GPT-2) for intelligent health assistance.</div>
+          </div>
+          <div class="project-card">
+            <div class="project-title">Climate Anomaly Detection</div>
+            <div class="project-desc">Ensemble model (87% accuracy) for weather/climate anomaly analysis.</div>
+          </div>
+          <div class="project-card">
+            <div class="project-title">E-Commerce Sales Pipeline</div>
+            <div class="project-desc">Real-time AWS/Kafka ETL pipeline & Tableau forecasting dashboards.</div>
+          </div>
+          <div class="project-card">
+            <div class="project-title">Product Defect Detection</div>
+            <div class="project-desc">CNN with TensorFlow/Keras for manufacturing QC to 95% accuracy.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="github" class="section-block">
+        <h2>GitHub Projects</h2>
+        <div class="github-grid">
+          <div class="gh-card">
+            <div class="gh-title">MeheheP.github.io</div>
+            <div class="gh-desc">Personal portfolio website repository</div>
+            <a class="gh-link" href="https://github.com/MeheheP/MeheheP.github.io" target="_blank">View on GitHub</a>
+          </div>
+          <div class="gh-card">
+            <div class="gh-title">Cary_Bike</div>
+            <div class="gh-desc">CPD crash data + Jupyter Notebook for bike route analytics</div>
+            <a class="gh-link" href="https://github.com/MeheheP/Cary_Bike" target="_blank">View on GitHub</a>
+          </div>
+          <div class="gh-card">
+            <div class="gh-title">GoCary_Bus_route_optimizatio</div>
+            <div class="gh-desc">Cary/Triangle bus analysis: on-time, delays, operational efficiency</div>
+            <a class="gh-link" href="https://github.com/MeheheP/GoCary_Bus_route_optimizatio" target="_blank">View on GitHub</a>
+          </div>
+          <div class="gh-card">
+            <div class="gh-title">Customer-Lifetime-Value-LTV-Fraud-Detection-Analysis</div>
+            <div class="gh-desc">LTV/Fraud detection in Jupyter: patterns and prediction</div>
+            <a class="gh-link" href="https://github.com/MeheheP/Customer-Lifetime-Value-LTV-Fraud-Detection-Analysis" target="_blank">View on GitHub</a>
+          </div>
+        </div>
+      </section>
+
+      <section id="skills" class="section-block">
+        <h2>Technical Skills</h2>
+        <div class="skill-grid">
+          <span class="skill-pill">Python</span>
+          <span class="skill-pill">R</span>
+          <span class="skill-pill">SQL</span>
+          <span class="skill-pill">AWS</span>
+          <span class="skill-pill">Tableau</span>
+          <span class="skill-pill">Power BI</span>
+          <span class="skill-pill">Scikit-learn</span>
+          <span class="skill-pill">TensorFlow</span>
+          <span class="skill-pill">PyTorch</span>
+          <span class="skill-pill">Pandas</span>
+          <span class="skill-pill">NumPy</span>
+          <span class="skill-pill">XGBoost</span>
+          <span class="skill-pill">Kafka</span>
+          <span class="skill-pill">Docker</span>
+          <span class="skill-pill">Git & GitHub</span>
+        </div>
+      </section>
+
+      <section id="edu" class="section-block">
+        <h2>Education</h2>
+        <div class="edu-grid">
+          <div>
+            <div class="school">Westcliff University <span class="school-degree">MBA, Data Driven Decisions</span></div>
+          </div>
+          <div>
+            <div class="school">Purdue University <span class="school-degree">MS, Computer Information Science</span></div>
+          </div>
+          <div>
+            <div class="school">University of Mumbai <span class="school-degree">BSc, Computer Science</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="exp" class="section-block">
+        <h2>Experience</h2>
+        <div class="exp-grid">
+          <div class="job">
+            <div class="job-role"><span class="job-company">Spotlist Inc.</span> · Lead Data Science Intern <span class="highlight">July 2023 – Mar 2024</span></div>
+            <ul>
+              <li>Reduced data collection time 30% with automated cleaning pipelines</li>
+              <li>AWS/Kafka streaming and ETL optimization (report latency -50%)</li>
+            </ul>
+          </div>
+          <div class="job">
+            <div class="job-role"><span class="job-company">Dhakad Events & Entertainment</span> · Junior Analyst <span class="highlight">Aug 2019 – Jul 2021</span></div>
+            <ul>
+              <li>Automated SQL reporting, reduced manual effort by 35 hrs/month</li>
+              <li>Cut inconsistencies 15% with robust data warehousing</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
   </div>
 </body>
 </html>
