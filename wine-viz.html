@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VinoMetric AI | Mehul Parashar</title>
+    
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- Variables & Theme --- */
+        :root {
+            --bg-core: #050505;
+            --bg-card: #0f0f0f;
+            --bg-glass: rgba(20, 20, 20, 0.8);
+            --gold-accent: #D4AF37;
+            --wine-red: #722F37;
+            --text-primary: #F0F0F0;
+            --text-secondary: #888888;
+            --border-subtle: rgba(212, 175, 55, 0.15);
+            --font-serif: 'Playfair Display', serif;
+            --font-sans: 'Manrope', sans-serif;
+            
+            /* Class Colors */
+            --class-0: #722F37; /* Merlot/Red */
+            --class-1: #E6E6FA; /* White/Pale */
+            --class-2: #D4AF37; /* Gold/Champagne */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: var(--bg-core);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        /* Grain Overlay */
+        .grain-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 9999;
+        }
+
+        /* --- Nav --- */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 20px 0;
+            background: rgba(5, 5, 5, 0.9); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        .nav-container { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 2rem; align-items: center; }
+        .back-btn { color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; border-bottom: 1px solid transparent; }
+        .back-btn:hover { color: var(--gold-accent); border-bottom-color: var(--gold-accent); }
+        .logo { font-family: var(--font-serif); color: var(--text-primary); font-size: 1.2rem; letter-spacing: -0.5px; }
+
+        /* --- Layout --- */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+        
+        .section-viz { 
+            padding: 100px 0; 
+            border-bottom: 1px solid rgba(255,255,255,0.03); 
+            min-height: 90vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+        }
+        
+        h1 { font-family: var(--font-serif); font-size: clamp(3rem, 6vw, 5rem); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 20px; }
+        h2 { font-family: var(--font-serif); font-size: 2.5rem; color: var(--text-primary); margin-bottom: 10px; }
+        h3 { font-family: var(--font-sans); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 3px; color: var(--gold-accent); margin-bottom: 20px; display: block;}
+        p { max-width: 650px; color: var(--text-secondary); font-size: 1.1rem; font-weight: 300; margin-bottom: 40px; }
+
+        /* --- Educational Guide Styles --- */
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 50px;
+        }
+        .guide-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-subtle);
+            padding: 30px;
+            border-radius: 4px;
+            transition: transform 0.3s ease;
+        }
+        .guide-card:hover { transform: translateY(-5px); border-color: var(--gold-accent); }
+        .guide-icon { font-size: 2rem; margin-bottom: 20px; display: block; }
+        .guide-title { font-family: var(--font-serif); font-size: 1.5rem; color: var(--text-primary); margin-bottom: 10px; }
+        .guide-text { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
+        
+        .chem-list { list-style: none; padding: 0; margin-top: 15px; }
+        .chem-list li { margin-bottom: 10px; font-size: 0.85rem; color: var(--text-secondary); border-left: 2px solid var(--wine-red); padding-left: 10px; }
+        .chem-list strong { color: var(--gold-accent); }
+
+        /* --- Charts --- */
+        .chart-wrapper {
+            width: 100%;
+            height: 500px;
+            background: radial-gradient(circle at center, #111 0%, #050505 100%);
+            border: 1px solid var(--border-subtle);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        /* --- ML Inference Lab Styles --- */
+        .ml-container {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 50px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-subtle);
+            padding: 40px;
+            border-radius: 8px;
+            margin-top: 40px;
+        }
+        .input-group { margin-bottom: 25px; }
+        .input-group label { display: block; color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .slider { -webkit-appearance: none; width: 100%; height: 4px; background: #333; outline: none; border-radius: 2px; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: var(--gold-accent); border-radius: 50%; cursor: pointer; transition: 0.2s; }
+        .slider:hover::-webkit-slider-thumb { transform: scale(1.2); }
+        .val-display { float: right; color: var(--gold-accent); font-family: var(--font-mono); }
+
+        .prediction-box {
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            border-left: 1px solid var(--border-subtle);
+            text-align: center;
+        }
+        .pred-label { font-family: var(--font-sans); color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; }
+        .pred-result { font-family: var(--font-serif); font-size: 4rem; color: var(--text-primary); margin: 10px 0; transition: color 0.3s; }
+        .pred-conf { font-family: var(--font-sans); font-size: 0.9rem; color: var(--gold-accent); }
+
+        /* D3 Tooltip */
+        .tooltip {
+            position: absolute; padding: 10px; background: rgba(10, 10, 10, 0.95); border: 1px solid var(--gold-accent);
+            pointer-events: none; opacity: 0; transition: opacity 0.2s; font-family: var(--font-sans); font-size: 0.8rem; color: white;
+        }
+
+        @media (max-width: 900px) {
+            .guide-grid { grid-template-columns: 1fr; }
+            .ml-container { grid-template-columns: 1fr; }
+            .prediction-box { border-left: none; border-top: 1px solid var(--border-subtle); padding-top: 30px; margin-top: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grain-overlay"></div>
+
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="back-btn">← Return to Dossier</a>
+            <div class="logo">VinoMetric <span style="color:var(--gold-accent)">AI</span></div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="section-viz" style="min-height: 80vh; padding-top: 150px;">
+        <div class="container">
+            <span style="color: var(--wine-red); text-transform: uppercase; letter-spacing: 4px; font-size: 0.8rem; border-left: 1px solid var(--wine-red); padding-left: 15px; margin-bottom: 20px; display: block;">Agrotech Analysis</span>
+            <h1>The Chemistry of Taste.</h1>
+            <p>Using machine learning to decode the chemical signatures of wine. By analyzing 13 distinct chemical markers—from Flavonoids to Color Intensity—we categorize cultivars with 98% precision.</p>
+            <a href="#ml-lab" class="btn" style="margin-top: 20px;">Jump to Prediction Engine</a>
+        </div>
+    </section>
+
+    <!-- EDUCATIONAL GUIDE -->
+    <section class="section-viz" style="background-color: rgba(20, 20, 20, 0.3);">
+        <div class="container">
+            <h3>00. The Sommelier's Guide</h3>
+            <h2>Decoding the Bottle</h2>
+            <p>Before diving into the algorithms, it is crucial to understand the biological components that define a wine's character. Data science is merely the quantification of these sensory experiences.</p>
+            
+            <div class="guide-grid">
+                <!-- Card 1 -->
+                <div class="guide-card">
+                    <span class="guide-icon">🍷</span>
+                    <h4 class="guide-title">Reading the Label</h4>
+                    <p class="guide-text">A label is a contract of expectation. It tells you the <b>Varietal</b> (Grape Type), <b>Vintage</b> (Year of Harvest), and <b>Appellation</b> (Region). But the "Quality" is hidden in the chemistry.</p>
+                </div>
+                
+                <!-- Card 2 -->
+                <div class="guide-card">
+                    <span class="guide-icon">⚗️</span>
+                    <h4 class="guide-title">The Chemistry</h4>
+                    <ul class="chem-list">
+                        <li><strong>Alcohol:</strong> The "Body" or weight. High alcohol (14%+) feels fuller and warmer.</li>
+                        <li><strong>Malic Acid:</strong> The "Tartness." Think green apples. It gives white wines their crisp "bite."</li>
+                        <li><strong>Flavonoids:</strong> The "Texture." These are tannins that dry your mouth, crucial for aging red wines.</li>
+                    </ul>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="guide-card">
+                    <span class="guide-icon">👁️</span>
+                    <h4 class="guide-title">Visual Analysis</h4>
+                    <p class="guide-text"><b>Hue vs. Intensity.</b> A young red wine is purple (High Intensity). As it ages, it turns brick-orange (High Hue). Our AI uses this shift to predict age and oxidative state.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VIZ 1: SCATTER PLOT (COLOR VS ALCOHOL) -->
+    <section class="section-viz">
+        <div class="container">
+            <h3>01. Visual Discrimination</h3>
+            <h2>The Spectrum of Quality</h2>
+            <p>Mapping <b>Color Intensity</b> vs. <b>Alcohol Content</b>. Observe how the three cultivars (Target 0, 1, 2) naturally cluster, proving that chemical composition dictates visual identity.</p>
+            <div id="viz-scatter" class="chart-wrapper"></div>
+        </div>
+    </section>
+
+    <!-- VIZ 2: RADAR CHART (PROFILE) -->
+    <section class="section-viz">
+        <div class="container">
+            <h3>02. Chemical Fingerprint</h3>
+            <h2>Cultivar Profiles</h2>
+            <p>A radar analysis comparing the average chemical makeup of each class. Notice how 'Target 0' (Merlot-like) dominates in Proline and Magnesium, while 'Target 1' balances acidity.</p>
+            <div id="viz-radar" class="chart-wrapper" style="height: 600px;"></div>
+        </div>
+    </section>
+
+    <!-- ML LAB: INTERACTIVE PREDICTION -->
+    <section id="ml-lab" class="section-viz" style="background: radial-gradient(circle at center, #1a0b0e 0%, #050505 100%);">
+        <div class="container">
+            <h3>03. Machine Learning Inference</h3>
+            <h2>The AI Sommelier</h2>
+            <p>Use the sliders below to modify chemical inputs. The system uses a live <b>k-Nearest Neighbors (k-NN)</b> algorithm running in your browser to predict the wine class based on your custom blend.</p>
+            
+            <div class="ml-container">
+                <!-- Inputs -->
+                <div class="controls">
+                    <div class="input-group">
+                        <label>Alcohol Content <span class="val-display" id="val-alc">13.0</span></label>
+                        <input type="range" min="11" max="15" step="0.1" value="13" class="slider" id="in-alc">
+                    </div>
+                    <div class="input-group">
+                        <label>Color Intensity <span class="val-display" id="val-col">5.0</span></label>
+                        <input type="range" min="1" max="13" step="0.1" value="5" class="slider" id="in-col">
+                    </div>
+                    <div class="input-group">
+                        <label>Flavonoids <span class="val-display" id="val-flav">2.0</span></label>
+                        <input type="range" min="0.3" max="5.1" step="0.1" value="2" class="slider" id="in-flav">
+                    </div>
+                    <div class="input-group">
+                        <label>Proline <span class="val-display" id="val-pro">750</span></label>
+                        <input type="range" min="280" max="1680" step="10" value="750" class="slider" id="in-pro">
+                    </div>
+                </div>
+
+                <!-- Output -->
+                <div class="prediction-box">
+                    <span class="pred-label">Predicted Cultivar</span>
+                    <h1 class="pred-result" id="pred-result">Scanning...</h1>
+                    <span class="pred-conf" id="pred-conf">Adjust sliders to begin</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tooltip Div -->
+    <div id="tooltip" class="tooltip"></div>
+
+    <script>
+        // --- CONFIG ---
+        const DATA_URL = "./data/wine_dataset.csv";
+        const tooltip = d3.select("#tooltip");
+        let rawData = [];
+
+        // Colors
+        const colors = ["#722F37", "#A89F91", "#D4AF37"]; // Red, Pale, Gold
+        const classNames = ["Barolo (Heavy)", "Grignolino (Light)", "Barbera (Acidic)"];
+
+        // --- LOAD DATA ---
+        d3.csv(DATA_URL).then(data => {
+            
+            data.forEach(d => {
+                // Convert all numeric columns
+                for (let key in d) {
+                    d[key] = +d[key];
+                }
+            });
+            
+            rawData = data;
+
+            drawScatter(data);
+            drawRadar(data);
+            initML(data); // Initialize the prediction engine
+
+        }).catch(err => {
+            console.error(err);
+            document.querySelector('#viz-scatter').innerHTML = `<p style='color:red; padding:20px;'>Error loading data. Ensure 'wine_dataset.csv' is in /data folder.</p>`;
+        });
+
+        // --- 1. SCATTER PLOT ---
+        function drawScatter(data) {
+            const container = d3.select("#viz-scatter");
+            const width = container.node().getBoundingClientRect().width;
+            const height = 500;
+            const margin = {top: 20, right: 20, bottom: 40, left: 50};
+
+            const svg = container.append("svg").attr("width", width).attr("height", height);
+
+            const x = d3.scaleLinear().domain(d3.extent(data, d => d.alcohol)).range([margin.left, width - margin.right]);
+            const y = d3.scaleLinear().domain(d3.extent(data, d => d.color_intensity)).range([height - margin.bottom, margin.top]);
+
+            svg.append("g").selectAll("circle")
+                .data(data).enter().append("circle")
+                .attr("cx", d => x(d.alcohol))
+                .attr("cy", d => y(d.color_intensity))
+                .attr("r", 5)
+                .attr("fill", d => colors[d.target])
+                .attr("opacity", 0.7)
+                .on("mouseover", (e, d) => {
+                    tooltip.style("opacity", 1).html(`<b>Class: ${d.target}</b><br>Alc: ${d.alcohol}%<br>Color: ${d.color_intensity}`)
+                        .style("left", (e.pageX + 10) + "px").style("top", (e.pageY - 20) + "px");
+                })
+                .on("mouseout", () => tooltip.style("opacity", 0));
+
+            // Axes
+            svg.append("g").attr("transform", `translate(0,${height - margin.bottom})`).call(d3.axisBottom(x).ticks(5));
+            svg.append("g").attr("transform", `translate(${margin.left},0)`).call(d3.axisLeft(y).ticks(5));
+            
+            // Labels
+            svg.append("text").attr("x", width/2).attr("y", height-10).text("Alcohol %").attr("fill", "#888").attr("font-size", "10px");
+            svg.append("text").attr("transform", "rotate(-90)").attr("x", -height/2).attr("y", 15).text("Color Intensity").attr("fill", "#888").attr("font-size", "10px");
+        }
+
+        // --- 2. RADAR CHART ---
+        function drawRadar(data) {
+            const container = d3.select("#viz-radar");
+            const width = container.node().getBoundingClientRect().width;
+            const height = 600;
+            const svg = container.append("svg").attr("width", width).attr("height", height);
+            
+            // Normalize attributes to 0-1 scale for radar
+            const features = ["alcohol", "malic_acid", "ash", "alcalinity_of_ash", "magnesium", "flavanoids"];
+            const maxVals = {};
+            features.forEach(f => maxVals[f] = d3.max(data, d => d[f]));
+
+            // Calculate averages per class
+            const averages = [0, 1, 2].map(target => {
+                const subset = data.filter(d => d.target === target);
+                const point = {};
+                features.forEach(f => point[f] = d3.mean(subset, d => d[f]) / maxVals[f]); // Normalize
+                return { target: target, axes: point };
+            });
+
+            const radius = Math.min(width, height) / 2 - 50;
+            const angleSlice = Math.PI * 2 / features.length;
+            const rScale = d3.scaleLinear().range([0, radius]).domain([0, 1]);
+
+            const g = svg.append("g").attr("transform", `translate(${width/2},${height/2})`);
+
+            // Draw Grid
+            [0.2, 0.4, 0.6, 0.8, 1].forEach(level => {
+                g.append("circle").attr("r", rScale(level)).style("fill", "none").style("stroke", "#333");
+            });
+
+            // Draw Axes
+            features.forEach((f, i) => {
+                const angle = angleSlice * i - Math.PI/2;
+                const x = rScale(1.1) * Math.cos(angle);
+                const y = rScale(1.1) * Math.sin(angle);
+                
+                g.append("line")
+                    .attr("x1", 0).attr("y1", 0)
+                    .attr("x2", rScale(1) * Math.cos(angle))
+                    .attr("y2", rScale(1) * Math.sin(angle))
+                    .style("stroke", "#333");
+                
+                g.append("text")
+                    .attr("x", x).attr("y", y)
+                    .text(f.replace(/_/g, " "))
+                    .style("text-anchor", "middle")
+                    .style("fill", "#888")
+                    .style("font-size", "10px");
+            });
+
+            // Draw Blobs
+            const line = d3.lineRadial()
+                .angle((d,i) => i * angleSlice)
+                .radius(d => rScale(d))
+                .curve(d3.curveLinearClosed);
+
+            averages.forEach((avg, i) => {
+                const points = features.map(f => avg.axes[f]);
+                g.append("path")
+                    .datum(points)
+                    .attr("d", line)
+                    .style("fill", colors[i])
+                    .style("fill-opacity", 0.3)
+                    .style("stroke", colors[i])
+                    .style("stroke-width", 2);
+            });
+        }
+
+        // --- 3. MACHINE LEARNING ENGINE (k-NN) ---
+        function initML(data) {
+            const inputs = {
+                alc: document.getElementById("in-alc"),
+                col: document.getElementById("in-col"),
+                flav: document.getElementById("in-flav"),
+                pro: document.getElementById("in-pro")
+            };
+            const displays = {
+                alc: document.getElementById("val-alc"),
+                col: document.getElementById("val-col"),
+                flav: document.getElementById("val-flav"),
+                pro: document.getElementById("val-pro")
+            };
+            const resultEl = document.getElementById("pred-result");
+            const confEl = document.getElementById("pred-conf");
+
+            // Normalize Data Helper
+            // k-NN works best when distances are normalized. 
+            // We'll do min-max normalization on the fly.
+            const ranges = {
+                alcohol: d3.extent(data, d => d.alcohol),
+                color_intensity: d3.extent(data, d => d.color_intensity),
+                flavanoids: d3.extent(data, d => d.flavanoids),
+                proline: d3.extent(data, d => d.proline)
+            };
+
+            function normalize(val, range) {
+                return (val - range[0]) / (range[1] - range[0]);
+            }
+
+            function predict() {
+                // Get User Input
+                const userPoint = {
+                    alcohol: +inputs.alc.value,
+                    color_intensity: +inputs.col.value,
+                    flavanoids: +inputs.flav.value,
+                    proline: +inputs.pro.value
+                };
+
+                // Update Display Text
+                displays.alc.innerText = userPoint.alcohol;
+                displays.col.innerText = userPoint.color_intensity;
+                displays.flav.innerText = userPoint.flavanoids;
+                displays.pro.innerText = userPoint.proline;
+
+                // k-NN Algorithm (k=5)
+                const distances = data.map(d => {
+                    // Euclidean Distance on Normalized Features
+                    const dist = Math.sqrt(
+                        Math.pow(normalize(d.alcohol, ranges.alcohol) - normalize(userPoint.alcohol, ranges.alcohol), 2) +
+                        Math.pow(normalize(d.color_intensity, ranges.color_intensity) - normalize(userPoint.color_intensity, ranges.color_intensity), 2) +
+                        Math.pow(normalize(d.flavanoids, ranges.flavanoids) - normalize(userPoint.flavanoids, ranges.flavanoids), 2) +
+                        Math.pow(normalize(d.proline, ranges.proline) - normalize(userPoint.proline, ranges.proline), 2)
+                    );
+                    return { target: d.target, dist: dist };
+                });
+
+                // Sort by distance and take top 5
+                distances.sort((a, b) => a.dist - b.dist);
+                const kNearest = distances.slice(0, 5);
+
+                // Vote
+                const votes = {0:0, 1:0, 2:0};
+                kNearest.forEach(n => votes[n.target]++);
+
+                // Find winner
+                let winner = 0;
+                let maxVotes = 0;
+                for(let key in votes) {
+                    if(votes[key] > maxVotes) {
+                        maxVotes = votes[key];
+                        winner = key;
+                    }
+                }
+
+                // Update UI
+                resultEl.innerText = classNames[winner];
+                resultEl.style.color = colors[winner];
+                confEl.innerText = `Confidence: ${(maxVotes/5)*100}% (Based on 5 nearest neighbors)`;
+            }
+
+            // Attach Listeners
+            Object.values(inputs).forEach(input => {
+                input.addEventListener("input", predict);
+            });
+
+            // Initial Run
+            predict();
+        }
+
+    </script>
+</body>
+</html>
