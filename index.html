@@ -216,6 +216,7 @@
             position: relative;
             overflow: hidden;
             transition: 0.5s;
+            cursor: pointer;
         }
         .project-visual:hover { border-color: var(--gold-accent); }
         
@@ -225,7 +226,13 @@
             opacity: 0.2;
             background-image: repeating-linear-gradient(45deg, #222 0, #222 1px, transparent 0, transparent 50%);
             background-size: 10px 10px;
+            transition: transform 0.5s ease;
         }
+        .project-visual:hover .visual-art {
+            transform: scale(1.05);
+            opacity: 0.3;
+        }
+        
         /* Unique Pattern for Spotify Project */
         .visual-spotify {
             background-image: radial-gradient(circle at center, #1DB954 0%, transparent 0%), repeating-linear-gradient(0deg, #111 0px, #111 2px, transparent 3px);
@@ -366,19 +373,24 @@
     <section id="projects" class="section-padding container">
         <h2 class="fade-up">Selected Works</h2>
 
-        <!-- NEW PROJECT: SPOTIFY -->
+        <!-- NEW PROJECT: SPOTIFY (LINKED) -->
         <div class="project-item fade-up">
-            <div class="project-visual">
+            <!-- Added Anchor Link to Visual -->
+            <a href="spotify-viz.html" class="project-visual" title="View Interactive Data Story">
                 <div class="visual-art visual-spotify"></div>
-            </div>
+            </a>
             <div class="project-content">
                 <span class="project-num" style="color: #1DB954; opacity: 0.3;">NEW</span>
-                <h3>Spotify: The Pulse of Music</h3>
+                <!-- Added Anchor Link to Title -->
+                <h3><a href="spotify-viz.html">Spotify: The Pulse of Music</a></h3>
                 <p>An interactive data story analyzing the sonic architecture of modern hits. Features a deep-dive into genre evolution and the correlation between explicit content and artist virality.</p>
                 <div class="project-tags">
                     <span class="tag tag-highlight">Interactive Viz</span>
                     <span class="tag">D3.js</span>
                     <span class="tag">Data Storytelling</span>
+                </div>
+                <div style="margin-top: 20px;">
+                     <a href="spotify-viz.html" class="btn" style="font-size: 0.7rem; padding: 10px 20px;">Launch Visualization</a>
                 </div>
             </div>
         </div>
