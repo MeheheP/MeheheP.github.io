@@ -137,10 +137,23 @@
         .pred-result { font-family: var(--font-serif); font-size: 4rem; color: var(--text-primary); margin: 10px 0; transition: color 0.3s; }
         .pred-conf { font-family: var(--font-sans); font-size: 0.9rem; color: var(--gold-accent); }
 
-        /* D3 Tooltip */
-        .tooltip {
-            position: absolute; padding: 10px; background: rgba(10, 10, 10, 0.95); border: 1px solid var(--gold-accent);
-            pointer-events: none; opacity: 0; transition: opacity 0.2s; font-family: var(--font-sans); font-size: 0.8rem; color: white;
+        /* D3 Tooltip - Fixed Positioning */
+        #tooltip {
+            position: fixed; /* Changed from absolute to fixed */
+            padding: 10px 15px;
+            background: rgba(10, 10, 10, 0.95);
+            border: 1px solid var(--gold-accent);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.1s ease-out;
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            color: white;
+            z-index: 9999; /* Top Z-Index */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            border-radius: 4px;
+            transform: translate(-50%, -100%); /* Center above cursor */
+            margin-top: -15px; /* Offset from cursor */
         }
 
         @media (max-width: 900px) {
@@ -184,6 +197,7 @@
                     <span class="guide-icon">🍷</span>
                     <h4 class="guide-title">Reading the Label</h4>
                     <p class="guide-text">A label is a contract of expectation. It tells you the <b>Varietal</b> (Grape Type), <b>Vintage</b> (Year of Harvest), and <b>Appellation</b> (Region). But the "Quality" is hidden in the chemistry.</p>
+                    <div id="viz-donut" style="height: 150px; margin-top: 15px;"></div>
                 </div>
                 
                 <!-- Card 2 -->
@@ -227,10 +241,20 @@
         </div>
     </section>
 
+     <!-- VIZ 3: CORRELATION HEATMAP -->
+     <section class="section-viz">
+        <div class="container">
+            <h3>03. Molecular Interactions</h3>
+            <h2>The Taste Matrix</h2>
+            <p>A correlation heatmap revealing hidden relationships. Darker squares indicate strong positive correlations. Notice the strong link between <b>Flavanoids</b> and <b>Total Phenols</b>—key indicators of antioxidant capacity.</p>
+            <div id="viz-heatmap" class="chart-wrapper" style="height: 600px;"></div>
+        </div>
+    </section>
+
     <!-- ML LAB: INTERACTIVE PREDICTION -->
     <section id="ml-lab" class="section-viz" style="background: radial-gradient(circle at center, #1a0b0e 0%, #050505 100%);">
         <div class="container">
-            <h3>03. Machine Learning Inference</h3>
+            <h3>04. Machine Learning Inference</h3>
             <h2>The AI Sommelier</h2>
             <p>Use the sliders below to modify chemical inputs. The system uses a live <b>k-Nearest Neighbors (k-NN)</b> algorithm running in your browser to predict the wine class based on your custom blend.</p>
             
@@ -265,8 +289,8 @@
         </div>
     </section>
 
-    <!-- Tooltip Div -->
-    <div id="tooltip" class="tooltip"></div>
+    <!-- Tooltip Div (Appended to Body) -->
+    <div id="tooltip"></div>
 
     <script>
         // --- CONFIG ---
@@ -290,14 +314,54 @@
             
             rawData = data;
 
+            drawDonut(data); // New
             drawScatter(data);
             drawRadar(data);
-            initML(data); // Initialize the prediction engine
+            drawHeatmap(data); // New
+            initML(data); 
 
         }).catch(err => {
             console.error(err);
             document.querySelector('#viz-scatter').innerHTML = `<p style='color:red; padding:20px;'>Error loading data. Ensure 'wine_dataset.csv' is in /data folder.</p>`;
         });
+
+        // --- HELPER: TOOLTIP LOGIC ---
+        function showTooltip(html, event) {
+            tooltip.style("opacity", 1).html(html)
+                .style("left", (event.clientX) + "px") // Use clientX for fixed position
+                .style("top", (event.clientY - 10) + "px");
+        }
+        function hideTooltip() {
+            tooltip.style("opacity", 0);
+        }
+
+        // --- 0. DONUT CHART (DISTRIBUTION) ---
+        function drawDonut(data) {
+            const container = d3.select("#viz-donut");
+            const width = container.node().getBoundingClientRect().width;
+            const height = 150;
+            const radius = Math.min(width, height) / 2;
+
+            const svg = container.append("svg").attr("width", width).attr("height", height)
+                .append("g").attr("transform", `translate(${width/2},${height/2})`);
+            
+            const counts = d3.rollup(data, v => v.length, d => d.target);
+            const pie = d3.pie().value(d => d[1]).sort(null);
+            const arc = d3.arc().innerRadius(radius * 0.6).outerRadius(radius);
+
+            svg.selectAll("path")
+                .data(pie(Array.from(counts)))
+                .join("path")
+                .attr("d", arc)
+                .attr("fill", d => colors[d.data[0]])
+                .attr("stroke", "#0f0f0f")
+                .style("stroke-width", "2px")
+                .on("mouseover", (event, d) => showTooltip(`Class ${d.data[0]}: ${d.data[1]} Samples`, event))
+                .on("mouseout", hideTooltip);
+            
+            // Center Text
+            svg.append("text").attr("text-anchor", "middle").attr("dy", "0.3em").text("Data Dist.").style("fill", "#888").style("font-size", "10px");
+        }
 
         // --- 1. SCATTER PLOT ---
         function drawScatter(data) {
@@ -318,11 +382,10 @@
                 .attr("r", 5)
                 .attr("fill", d => colors[d.target])
                 .attr("opacity", 0.7)
-                .on("mouseover", (e, d) => {
-                    tooltip.style("opacity", 1).html(`<b>Class: ${d.target}</b><br>Alc: ${d.alcohol}%<br>Color: ${d.color_intensity}`)
-                        .style("left", (e.pageX + 10) + "px").style("top", (e.pageY - 20) + "px");
+                .on("mouseover", (event, d) => {
+                    showTooltip(`<b>Class: ${d.target}</b><br>Alc: ${d.alcohol}%<br>Color: ${d.color_intensity}`, event);
                 })
-                .on("mouseout", () => tooltip.style("opacity", 0));
+                .on("mouseout", hideTooltip);
 
             // Axes
             svg.append("g").attr("transform", `translate(0,${height - margin.bottom})`).call(d3.axisBottom(x).ticks(5));
@@ -398,11 +461,56 @@
                     .style("fill", colors[i])
                     .style("fill-opacity", 0.3)
                     .style("stroke", colors[i])
-                    .style("stroke-width", 2);
+                    .style("stroke-width", 2)
+                    .on("mouseover", (event) => showTooltip(`<b>Average Profile: Class ${i}</b>`, event))
+                    .on("mouseout", hideTooltip);
             });
         }
 
-        // --- 3. MACHINE LEARNING ENGINE (k-NN) ---
+        // --- 3. CORRELATION HEATMAP ---
+        function drawHeatmap(data) {
+            const container = d3.select("#viz-heatmap");
+            const width = container.node().getBoundingClientRect().width;
+            const height = 600;
+            const margin = {top: 40, right: 20, bottom: 100, left: 100};
+
+            const svg = container.append("svg").attr("width", width).attr("height", height);
+            const features = ["alcohol", "malic_acid", "ash", "flavanoids", "color_intensity", "hue", "proline"];
+
+            // Calculate Correlation Matrix
+            let corr = [];
+            features.forEach((f1, i) => {
+                features.forEach((f2, j) => {
+                    let mean1 = d3.mean(data, d => d[f1]);
+                    let mean2 = d3.mean(data, d => d[f2]);
+                    let num = d3.sum(data, d => (d[f1] - mean1) * (d[f2] - mean2));
+                    let den = Math.sqrt(d3.sum(data, d => Math.pow(d[f1] - mean1, 2)) * d3.sum(data, d => Math.pow(d[f2] - mean2, 2)));
+                    let val = num / den;
+                    corr.push({x: f1, y: f2, val: val});
+                });
+            });
+
+            const x = d3.scaleBand().range([margin.left, width - margin.right]).domain(features).padding(0.05);
+            const y = d3.scaleBand().range([height - margin.bottom, margin.top]).domain(features).padding(0.05);
+            const color = d3.scaleLinear().range(["#000", "#D4AF37"]).domain([-1, 1]);
+
+            svg.selectAll("rect")
+                .data(corr).enter().append("rect")
+                .attr("x", d => x(d.x)).attr("y", d => y(d.y))
+                .attr("width", x.bandwidth()).attr("height", y.bandwidth())
+                .style("fill", d => color(d.val))
+                .style("stroke", "#222")
+                .on("mouseover", (event, d) => {
+                     showTooltip(`<b>${d.x} vs ${d.y}</b><br>Correlation: ${d.val.toFixed(2)}`, event);
+                })
+                .on("mouseout", hideTooltip);
+
+            // Labels
+            svg.append("g").attr("transform", `translate(0,${height - margin.bottom})`).call(d3.axisBottom(x)).selectAll("text").attr("transform", "rotate(-30)").style("text-anchor", "end").style("fill", "#888");
+            svg.append("g").attr("transform", `translate(${margin.left},0)`).call(d3.axisLeft(y)).selectAll("text").style("fill", "#888");
+        }
+
+        // --- 4. ML ENGINE (k-NN) ---
         function initML(data) {
             const inputs = {
                 alc: document.getElementById("in-alc"),
@@ -419,9 +527,6 @@
             const resultEl = document.getElementById("pred-result");
             const confEl = document.getElementById("pred-conf");
 
-            // Normalize Data Helper
-            // k-NN works best when distances are normalized. 
-            // We'll do min-max normalization on the fly.
             const ranges = {
                 alcohol: d3.extent(data, d => d.alcohol),
                 color_intensity: d3.extent(data, d => d.color_intensity),
@@ -434,7 +539,6 @@
             }
 
             function predict() {
-                // Get User Input
                 const userPoint = {
                     alcohol: +inputs.alc.value,
                     color_intensity: +inputs.col.value,
@@ -442,15 +546,12 @@
                     proline: +inputs.pro.value
                 };
 
-                // Update Display Text
                 displays.alc.innerText = userPoint.alcohol;
                 displays.col.innerText = userPoint.color_intensity;
                 displays.flav.innerText = userPoint.flavanoids;
                 displays.pro.innerText = userPoint.proline;
 
-                // k-NN Algorithm (k=5)
                 const distances = data.map(d => {
-                    // Euclidean Distance on Normalized Features
                     const dist = Math.sqrt(
                         Math.pow(normalize(d.alcohol, ranges.alcohol) - normalize(userPoint.alcohol, ranges.alcohol), 2) +
                         Math.pow(normalize(d.color_intensity, ranges.color_intensity) - normalize(userPoint.color_intensity, ranges.color_intensity), 2) +
@@ -460,15 +561,11 @@
                     return { target: d.target, dist: dist };
                 });
 
-                // Sort by distance and take top 5
                 distances.sort((a, b) => a.dist - b.dist);
                 const kNearest = distances.slice(0, 5);
-
-                // Vote
                 const votes = {0:0, 1:0, 2:0};
                 kNearest.forEach(n => votes[n.target]++);
 
-                // Find winner
                 let winner = 0;
                 let maxVotes = 0;
                 for(let key in votes) {
@@ -478,18 +575,15 @@
                     }
                 }
 
-                // Update UI
                 resultEl.innerText = classNames[winner];
                 resultEl.style.color = colors[winner];
                 confEl.innerText = `Confidence: ${(maxVotes/5)*100}% (Based on 5 nearest neighbors)`;
             }
 
-            // Attach Listeners
             Object.values(inputs).forEach(input => {
                 input.addEventListener("input", predict);
             });
 
-            // Initial Run
             predict();
         }
 
