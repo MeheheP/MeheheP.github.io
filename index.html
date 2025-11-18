@@ -32,6 +32,7 @@
             --font-serif: 'Playfair Display', serif;
             --font-sans: 'Manrope', sans-serif;
             --spotify-green: #1DB954;
+            --superhero-red: #E63946; /* New accent for superhero project */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -233,11 +234,19 @@
             opacity: 0.3;
         }
         
-        /* Unique Pattern for Spotify Project */
+        /* Pattern for Spotify Project */
         .visual-spotify {
             background-image: radial-gradient(circle at center, #1DB954 0%, transparent 0%), repeating-linear-gradient(0deg, #111 0px, #111 2px, transparent 3px);
             background-size: 20px 20px;
             opacity: 0.4;
+        }
+        
+        /* Pattern for Superhero Project (Halftone / Blueprint) */
+        .visual-superhero {
+            background-image: radial-gradient(#E63946 1px, transparent 1px), radial-gradient(#E63946 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.3;
         }
 
         .project-num {
@@ -373,24 +382,38 @@
     <section id="projects" class="section-padding container">
         <h2 class="fade-up">Selected Works</h2>
 
-        <!-- NEW PROJECT: SPOTIFY (LINKED) -->
+        <!-- NEW PROJECT: SUPERHERO CENSUS -->
         <div class="project-item fade-up">
-            <!-- Added Anchor Link to Visual -->
+            <a href="superhero-viz.html" class="project-visual" title="View Superhuman Census">
+                <div class="visual-art visual-superhero"></div>
+            </a>
+            <div class="project-content">
+                <span class="project-num" style="color: #E63946; opacity: 0.4;">NEW</span>
+                <h3><a href="superhero-viz.html">The Superhuman Census</a></h3>
+                <p>A socio-political analysis of metahuman activity. Investigating the correlation between power levels, training regimens, and civilian casualties to create a predictive risk model for public safety.</p>
+                <div class="project-tags">
+                    <span class="tag tag-highlight">Risk Analysis</span>
+                    <span class="tag">D3.js</span>
+                    <span class="tag">Public Policy</span>
+                </div>
+                <div style="margin-top: 20px;">
+                     <a href="superhero-viz.html" class="btn" style="font-size: 0.7rem; padding: 10px 20px;">Access Database</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROJECT: SPOTIFY -->
+        <div class="project-item fade-up">
             <a href="spotify-viz.html" class="project-visual" title="View Interactive Data Story">
                 <div class="visual-art visual-spotify"></div>
             </a>
             <div class="project-content">
-                <span class="project-num" style="color: #1DB954; opacity: 0.3;">NEW</span>
-                <!-- Added Anchor Link to Title -->
+                <span class="project-num">01</span>
                 <h3><a href="spotify-viz.html">Spotify: The Pulse of Music</a></h3>
                 <p>An interactive data story analyzing the sonic architecture of modern hits. Features a deep-dive into genre evolution and the correlation between explicit content and artist virality.</p>
                 <div class="project-tags">
-                    <span class="tag tag-highlight">Interactive Viz</span>
-                    <span class="tag">D3.js</span>
+                    <span class="tag">Interactive Viz</span>
                     <span class="tag">Data Storytelling</span>
-                </div>
-                <div style="margin-top: 20px;">
-                     <a href="spotify-viz.html" class="btn" style="font-size: 0.7rem; padding: 10px 20px;">Launch Visualization</a>
                 </div>
             </div>
         </div>
@@ -401,7 +424,7 @@
                 <div class="visual-art"></div>
             </div>
             <div class="project-content">
-                <span class="project-num">01</span>
+                <span class="project-num">02</span>
                 <h3>GoCary Route Optimization</h3>
                 <p>Advanced logistical analysis for Cary & GoTriangle bus systems. Leveraged geospatial data to reduce latency and improve operational on-time metrics.</p>
                 <div class="project-tags">
@@ -418,7 +441,7 @@
                 <div class="visual-art" style="background-image: radial-gradient(#333 1px, transparent 1px); background-size: 20px 20px;"></div>
             </div>
             <div class="project-content">
-                <span class="project-num">02</span>
+                <span class="project-num">03</span>
                 <h3>Route Safety Heatmap</h3>
                 <p>A safety-first initiative utilizing CPD crash data. Constructed detailed heatmaps to identify high-risk intersections for urban planning improvements.</p>
                 <div class="project-tags">
@@ -429,22 +452,6 @@
             </div>
         </div>
 
-        <!-- Project 3 -->
-        <div class="project-item fade-up">
-            <div class="project-visual">
-                 <div class="visual-art" style="background-image: linear-gradient(0deg, transparent 24%, #222 25%, #222 26%, transparent 27%, transparent 74%, #222 75%, #222 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, #222 25%, #222 26%, transparent 27%, transparent 74%, #222 75%, #222 76%, transparent 77%, transparent); background-size: 30px 30px;"></div>
-            </div>
-            <div class="project-content">
-                <span class="project-num">03</span>
-                <h3>LTV & Fraud Intelligence</h3>
-                <p>Developed high-precision predictive models to forecast Customer Lifetime Value and detect anomalous financial patterns in real-time.</p>
-                <div class="project-tags">
-                    <span class="tag">Scikit-Learn</span>
-                    <span class="tag">Fintech</span>
-                    <span class="tag">ML Ops</span>
-                </div>
-            </div>
-        </div>
     </section>
 
     <section id="capabilities" class="skills-section">
