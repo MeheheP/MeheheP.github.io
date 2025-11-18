@@ -31,6 +31,7 @@
             --border-subtle: rgba(212, 175, 55, 0.15);
             --font-serif: 'Playfair Display', serif;
             --font-sans: 'Manrope', sans-serif;
+            --spotify-green: #1DB954;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -125,7 +126,7 @@
         }
         .nav-links a:hover { color: var(--gold-accent); }
 
-        /* --- Hero Section (Updated with Image) --- */
+        /* --- Hero Section --- */
         .hero {
             min-height: 100vh;
             display: flex;
@@ -136,7 +137,7 @@
         
         .hero-grid {
             display: grid;
-            grid-template-columns: 1.2fr 0.8fr; /* Text wider than image */
+            grid-template-columns: 1.2fr 0.8fr;
             gap: 60px;
             align-items: center;
         }
@@ -152,12 +153,10 @@
             padding-left: 15px;
         }
 
-        /* Profile Image Styling */
         .hero-visual {
             position: relative;
             z-index: 1;
         }
-        /* The Gold Frame Offset */
         .hero-visual::before {
             content: '';
             position: absolute;
@@ -175,12 +174,12 @@
             width: 100%;
             height: auto;
             display: block;
-            filter: grayscale(100%) contrast(115%); /* Noir Effect */
+            filter: grayscale(100%) contrast(115%);
             transition: all 0.6s ease;
             opacity: 0.9;
         }
         .profile-img:hover {
-            filter: grayscale(0%) contrast(100%); /* Color Reveal */
+            filter: grayscale(0%) contrast(100%);
             opacity: 1;
         }
 
@@ -227,6 +226,12 @@
             background-image: repeating-linear-gradient(45deg, #222 0, #222 1px, transparent 0, transparent 50%);
             background-size: 10px 10px;
         }
+        /* Unique Pattern for Spotify Project */
+        .visual-spotify {
+            background-image: radial-gradient(circle at center, #1DB954 0%, transparent 0%), repeating-linear-gradient(0deg, #111 0px, #111 2px, transparent 3px);
+            background-size: 20px 20px;
+            opacity: 0.4;
+        }
 
         .project-num {
             font-family: var(--font-serif);
@@ -240,6 +245,10 @@
         .tag {
             font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;
             border: 1px solid #333; padding: 5px 15px; color: var(--text-secondary);
+        }
+        .tag-highlight {
+            border-color: var(--gold-accent);
+            color: var(--gold-accent);
         }
 
         /* --- Experience (Minimalist Timeline) --- */
@@ -317,7 +326,6 @@
 
     <header class="hero">
         <div class="container">
-            <!-- New Grid Layout for Image + Text -->
             <div class="hero-grid">
                 <div class="hero-content fade-up">
                     <span class="hero-label">Data Scientist & Analyst</span>
@@ -331,7 +339,6 @@
                     </div>
                 </div>
                 
-                <!-- Image Section -->
                 <div class="hero-visual fade-up">
                     <img src="images/Mehul.jpg" alt="Mehul Parashar" class="profile-img">
                 </div>
@@ -358,6 +365,23 @@
 
     <section id="projects" class="section-padding container">
         <h2 class="fade-up">Selected Works</h2>
+
+        <!-- NEW PROJECT: SPOTIFY -->
+        <div class="project-item fade-up">
+            <div class="project-visual">
+                <div class="visual-art visual-spotify"></div>
+            </div>
+            <div class="project-content">
+                <span class="project-num" style="color: #1DB954; opacity: 0.3;">NEW</span>
+                <h3>Spotify: The Pulse of Music</h3>
+                <p>An interactive data story analyzing the sonic architecture of modern hits. Features a deep-dive into genre evolution and the correlation between explicit content and artist virality.</p>
+                <div class="project-tags">
+                    <span class="tag tag-highlight">Interactive Viz</span>
+                    <span class="tag">D3.js</span>
+                    <span class="tag">Data Storytelling</span>
+                </div>
+            </div>
+        </div>
         
         <!-- Project 1 -->
         <div class="project-item fade-up">
@@ -439,7 +463,7 @@
                         <li>Tableau Dashboards</li>
                         <li>Power BI Reporting</li>
                         <li>Seaborn / Matplotlib</li>
-                        <li>Executive Data Storytelling</li>
+                        <li>D3.js & Interactive JS</li>
                     </ul>
                 </div>
                 <div class="skill-col">
