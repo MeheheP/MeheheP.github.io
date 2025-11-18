@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMA Risk Database | Restricted Access</title>
+    
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- DMA GOVERNMENT THEME --- */
+        :root {
+            --bg-dark: #050505;
+            --bg-panel: #0F1115;
+            --text-main: #E1E1E1;
+            --text-muted: #6B7280;
+            --accent-good: #00F0FF; /* Cyan for Heroes */
+            --accent-bad: #FF2A6D;  /* Neon Red for Villains */
+            --border-color: #1F2937;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-sans: 'Inter', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            font-size: 14px;
+        }
+
+        /* --- Header & Filters --- */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(5, 5, 5, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        .brand { font-family: var(--font-mono); font-weight: 700; letter-spacing: -1px; font-size: 1.2rem; }
+        .brand span { color: var(--accent-bad); }
+        
+        .filters { display: flex; gap: 15px; }
+        select {
+            background: var(--bg-panel);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            outline: none;
+        }
+        select:focus { border-color: var(--accent-good); }
+
+        /* --- Layout (Grid) --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 20px;
+            max-width: 1600px; margin: 0 auto;
+        }
+
+        .card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .card h3 {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            display: flex; justify-content: space-between;
+        }
+
+        /* Grid Spans */
+        .span-2 { grid-column: span 2; }
+        .span-4 { grid-column: span 4; }
+        .h-400 { height: 400px; }
+        .h-300 { height: 350px; }
+
+        /* --- Visualizations --- */
+        svg { width: 100%; height: 100%; overflow: visible; }
+        
+        /* Parallel Coords Lines */
+        .path-line { fill: none; stroke-width: 1.5px; opacity: 0.3; mix-blend-mode: screen; transition: opacity 0.2s; }
+        .path-line:hover { opacity: 1; stroke-width: 3px; }
+        
+        /* Scatter Dots */
+        .dot { stroke: #fff; stroke-width: 0.5px; transition: r 0.2s; cursor: crosshair; }
+        .dot:hover { stroke: var(--accent-good); stroke-width: 2px; }
+
+        /* Matrix Cells */
+        .cell { stroke: var(--bg-panel); stroke-width: 1px; transition: opacity 0.2s; }
+        .cell:hover { opacity: 0.8; }
+
+        /* Tooltip */
+        #tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.9);
+            border: 1px solid var(--text-muted);
+            padding: 10px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .tooltip-header { color: var(--accent-good); font-weight: bold; margin-bottom: 4px; }
+
+        /* Footer */
+        footer { text-align: center; padding: 40px; color: var(--text-muted); font-family: var(--font-mono); font-size: 0.7rem; }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .span-2, .span-4 { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="brand">DMA <span>//</span> RISK_DB</div>
+        <div class="filters">
+            <select id="filter-align">
+                <option value="all">Alignment: All Protocol</option>
+                <option value="good">Protocol: HERO</option>
+                <option value="bad">Protocol: VILLAIN</option>
+            </select>
+            <select id="filter-power">
+                <option value="all">Threat Level: All</option>
+                <option value="omega">Class: OMEGA (>90)</option>
+                <option value="alpha">Class: ALPHA (70-90)</option>
+                <option value="beta">Class: BETA (<70)</option>
+            </select>
+            <a href="index.html" style="color:var(--text-muted); text-decoration:none; font-family:var(--font-mono); margin-left:20px;">[EXIT]</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-grid">
+        
+        <!-- Viz A: Parallel Coordinates -->
+        <div class="card span-4 h-400">
+            <h3>01. Physiology Profile <span style="color:var(--accent-good)">BIO-METRICS</span></h3>
+            <div id="viz-parallel" style="height: 320px;"></div>
+        </div>
+
+        <!-- Viz B: Training vs Power -->
+        <div class="card span-2 h-300">
+            <h3>02. Discipline Funnel <span style="color:var(--text-muted)">TRAINING EFFICIENCY</span></h3>
+            <div id="viz-scatter-train" style="height: 280px;"></div>
+        </div>
+
+        <!-- Viz C: Power Matrix -->
+        <div class="card span-2 h-300">
+            <h3>03. Ability Synergy <span style="color:var(--text-muted)">POWER COMBOS</span></h3>
+            <div id="viz-matrix" style="height: 280px;"></div>
+        </div>
+
+        <!-- Viz D: Risk Analysis -->
+        <div class="card span-2 h-300">
+            <h3>04. Collateral Risk <span style="color:var(--accent-bad)">CASUALTY INDEX</span></h3>
+            <div id="viz-risk" style="height: 280px;"></div>
+        </div>
+
+        <!-- Viz E: The Watchlist -->
+        <div class="card span-2 h-300">
+            <h3>05. The Watchlist <span style="color:var(--accent-bad)">MOST DANGEROUS</span></h3>
+            <div id="viz-watchlist" style="height: 280px;"></div>
+        </div>
+        
+        <!-- Viz F: Career Arc -->
+        <div class="card span-4 h-300">
+            <h3>06. Public Sentiment <span style="color:var(--text-muted)">APPROVAL TRENDS</span></h3>
+            <div id="viz-career" style="height: 250px;"></div>
+        </div>
+
+    </div>
+
+    <footer>
+        DEPARTMENT OF METAHUMAN AFFAIRS | CLASSIFIED LEVEL 5<br>
+        DATASETS: 2025 CENSUS | AUTHORIZED PERSONNEL ONLY
+    </footer>
+
+    <div id="tooltip"></div>
+
+    <script>
+        // --- CONFIG ---
+        const DATA_URL = "./data/superhero_dataset.csv";
+        const tooltip = d3.select("#tooltip");
+        let rawData = [];
+
+        // Colors
+        const colorGood = "#00F0FF";
+        const colorBad = "#FF2A6D";
+        const colorGoodAlpha = "rgba(0, 240, 255, 0.2)";
+        const colorBadAlpha = "rgba(255, 42, 109, 0.2)";
+
+        // --- LOAD DATA ---
+        d3.csv(DATA_URL).then(data => {
+            // Parse Data
+            data.forEach(d => {
+                d.height_cm = +d.height_cm;
+                d.weight_kg = +d.weight_kg;
+                d.age = +d.age;
+                d.years_active = +d.years_active;
+                d.training_hours = +d.training_hours_per_week;
+                d.casualties = +d.civilian_casualties_past_year;
+                d.power = +d.power_level;
+                d.approval = +d.public_approval_rating;
+                d.is_good = +d.is_good; // 1 or 0
+                // Flag for ID
+                d.id = Math.random().toString(36).substr(2, 9);
+            });
+
+            rawData = data;
+            updateDashboard(); // Initial Draw
+
+            // Event Listeners
+            d3.select("#filter-align").on("change", updateDashboard);
+            d3.select("#filter-power").on("change", updateDashboard);
+
+        }).catch(err => {
+            console.error(err);
+            document.querySelector(".dashboard-grid").innerHTML = `<h2 style="color:red; text-align:center; grid-column:span 4; margin-top:50px;">ERROR: UPLOAD 'superhero_dataset.csv' TO GITHUB /data FOLDER</h2>`;
+        });
+
+        // --- UPDATE LOGIC ---
+        function updateDashboard() {
+            const alignFilter = d3.select("#filter-align").property("value");
+            const powerFilter = d3.select("#filter-power").property("value");
+
+            let filtered = rawData.filter(d => {
+                let alignMatch = (alignFilter === "all") || 
+                                 (alignFilter === "good" && d.is_good === 1) || 
+                                 (alignFilter === "bad" && d.is_good === 0);
+                
+                let powerMatch = (powerFilter === "all") ||
+                                 (powerFilter === "omega" && d.power > 90) ||
+                                 (powerFilter === "alpha" && d.power >= 70 && d.power <= 90) ||
+                                 (powerFilter === "beta" && d.power < 70);
+                
+                return alignMatch && powerMatch;
+            });
+
+            // Clear old charts
+            d3.selectAll("svg").remove();
+
+            drawParallelCoords(filtered);
+            drawTrainingScatter(filtered);
+            drawPowerMatrix(filtered);
+            drawRiskScatter(filtered);
+            drawWatchlist(filtered);
+            drawCareerArc(filtered);
+        }
+
+        // --- 1. PARALLEL COORDINATES ---
+        function drawParallelCoords(data) {
+            const container = document.getElementById("viz-parallel");
+            const margin = {top: 30, right: 10, bottom: 10, left: 0};
+            const width = container.clientWidth - margin.left - margin.right;
+            const height = container.clientHeight - margin.top - margin.bottom;
+
+            const svg = d3.select("#viz-parallel").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            const dimensions = ["height_cm", "weight_kg", "age", "years_active", "power"];
+            const yScales = {};
+
+            dimensions.forEach(dim => {
+                yScales[dim] = d3.scaleLinear()
+                    .domain(d3.extent(rawData, d => d[dim])) // Use rawData to keep scale consistent
+                    .range([height, 0]);
+            });
+
+            const x = d3.scalePoint()
+                .range([0, width])
+                .padding(1)
+                .domain(dimensions);
+
+            // Draw Lines
+            svg.selectAll("myPath")
+                .data(data)
+                .enter().append("path")
+                .attr("class", "path-line")
+                .attr("d", d => {
+                    return d3.line()(dimensions.map(p => [x(p), yScales[p](d[p])]));
+                })
+                .style("stroke", d => d.is_good ? colorGood : colorBad)
+                .on("mouseover", (e, d) => {
+                    tooltip.style("opacity", 1).html(`<div class="tooltip-header">ID: ${d.id}</div>Power: ${d.power}<br>Type: ${d.is_good ? 'HERO':'VILLAIN'}`)
+                        .style("left", (e.pageX+10)+"px").style("top", (e.pageY-10)+"px");
+                })
+                .on("mouseout", () => tooltip.style("opacity", 0));
+
+            // Draw Axes
+            svg.selectAll("myAxis")
+                .data(dimensions).enter().append("g")
+                .attr("transform", d => `translate(${x(d)})`)
+                .each(function(d) { d3.select(this).call(d3.axisLeft(yScales[d]).ticks(5)); })
+                .append("text")
+                .style("text-anchor", "middle")
+                .attr("y", -9)
+                .text(d => d.replace("_", " ").toUpperCase())
+                .style("fill", "var(--text-muted)")
+                .style("font-family", "var(--font-mono)")
+                .style("font-size", "0.6rem");
+            
+            svg.selectAll(".domain, .tick line").style("stroke", "#333");
+            svg.selectAll(".tick text").style("fill", "#555");
+        }
+
+        // --- 2. TRAINING SCATTER ---
+        function drawTrainingScatter(data) {
+            const container = document.getElementById("viz-scatter-train");
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const margin = {top: 20, right: 20, bottom: 30, left: 40};
+
+            const svg = d3.select("#viz-scatter-train").append("svg")
+                .attr("width", width).attr("height", height);
+
+            const x = d3.scaleLinear().domain([0, d3.max(rawData, d => d.training_hours)]).range([margin.left, width - margin.right]);
+            const y = d3.scaleLinear().domain([0, 100]).range([height - margin.bottom, margin.top]);
+
+            svg.append("g").selectAll("circle")
+                .data(data).enter().append("circle")
+                .attr("class", "dot")
+                .attr("cx", d => x(d.training_hours))
+                .attr("cy", d => y(d.power))
+                .attr("r", d => d.approval / 20) // Size by Approval
+                .style("fill", "none")
+                .style("stroke", d => d.is_good ? colorGood : colorBad)
+                .style("opacity", 0.6)
+                .on("mouseover", (e, d) => {
+                    tooltip.style("opacity", 1).html(`<div class="tooltip-header">TRAINING: ${d.training_hours}hrs</div>Power: ${d.power}<br>Approval: ${d.approval}%`)
+                        .style("left", (e.pageX+10)+"px").style("top", (e.pageY-10)+"px");
+                })
+                .on("mouseout", () => tooltip.style("opacity", 0));
+
+            // Axes
+            svg.append("g").attr("transform", `translate(0,${height - margin.bottom})`).call(d3.axisBottom(x).ticks(5)).attr("color", "#333");
+            svg.append("g").attr("transform", `translate(${margin.left},0)`).call(d3.axisLeft(y).ticks(5)).attr("color", "#333");
+        }
+
+        // --- 3. POWER MATRIX (HEATMAP) ---
+        function drawPowerMatrix(data) {
+            const container = document.getElementById("viz-matrix");
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const margin = {top: 20, right: 20, bottom: 50, left: 80};
+
+            const powers = ["super_strength", "flight", "telepathy", "invisibility", "healing_factor"];
+            // Calculate correlation counts
+            let matrix = [];
+            powers.forEach((p1, i) => {
+                powers.forEach((p2, j) => {
+                    let count = data.filter(d => d[p1] == 1 && d[p2] == 1).length;
+                    matrix.push({x: p1, y: p2, val: count});
+                });
+            });
+
+            const svg = d3.select("#viz-matrix").append("svg").attr("width", width).attr("height", height);
+
+            const x = d3.scaleBand().range([margin.left, width - margin.right]).domain(powers).padding(0.05);
+            const y = d3.scaleBand().range([height - margin.bottom, margin.top]).domain(powers).padding(0.05);
+            const color = d3.scaleLinear().range(["#111", "var(--accent-good)"]).domain([0, d3.max(matrix, d => d.val)]);
+
+            svg.selectAll("rect")
+                .data(matrix).enter().append("rect")
+                .attr("x", d => x(d.x)).attr("y", d => y(d.y))
+                .attr("width", x.bandwidth()).attr("height", y.bandwidth())
+                .style("fill", d => d.x === d.y ? "none" : color(d.val)) // Don't show self-correlation
+                .style("stroke", "#222")
+                .on("mouseover", (e, d) => {
+                    if(d.x !== d.y) {
+                         tooltip.style("opacity", 1).html(`<div class="tooltip-header">${d.x.toUpperCase()} + ${d.y.toUpperCase()}</div>Count: ${d.val}`)
+                        .style("left", (e.pageX+10)+"px").style("top", (e.pageY-10)+"px");
+                    }
+                })
+                .on("mouseout", () => tooltip.style("opacity", 0));
+
+            // Labels
+            svg.append("g").attr("transform", `translate(0,${height - margin.bottom})`).call(d3.axisBottom(x)).selectAll("text").attr("transform", "rotate(-15)").style("text-anchor", "end").style("fill", "#666");
+            svg.append("g").attr("transform", `translate(${margin.left},0)`).call(d3.axisLeft(y)).selectAll("text").style("fill", "#666");
+        }
+
+        // --- 4. RISK SCATTER (Casualties vs Power) ---
+        function drawRiskScatter(data) {
+            const container = document.getElementById("viz-risk");
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const margin = {top: 20, right: 20, bottom: 30, left: 40};
+
+            const svg = d3.select("#viz-risk").append("svg").attr("width", width).attr("height", height);
+            
+            // Use rawData max to keep scale steady during filtering
+            const maxCas = d3.max(rawData, d => d.casualties); 
+
+            const x = d3.scaleLinear().domain([0, 100]).range([margin.left, width - margin.right]);
+            const y = d3.scaleLinear().domain([0, maxCas]).range([height - margin.bottom, margin.top]);
+
+            // Warning Zones
+            svg.append("rect").attr("x", x(50)).attr("y", margin.top).attr("width", x(100)-x(50)).attr("height", y(0)-margin.top)
+                .attr("fill", "rgba(255, 42, 109, 0.05)");
+
+            svg.selectAll("circle")
+                .data(data).enter().append("circle")
+                .attr("cx", d => x(d.power))
+                .attr("cy", d => y(d.casualties))
+                .attr("r", 5)
+                .attr("fill", d => d.is_good ? colorGood : colorBad)
+                .attr("opacity", 0.8)
+                .on("mouseover", (e, d) => {
+                    tooltip.style("opacity", 1).html(`<div class="tooltip-header">CASUALTIES: ${d.casualties}</div>Power: ${d.power}<br>Alignment: ${d.is_good ? 'HERO' : 'VILLAIN'}`)
+                        .style("left", (e.pageX+10)+"px").style("top", (e.pageY-10)+"px");
+                })
+                .on("mouseout", () => tooltip.style("opacity", 0));
+
+            // Axes
+            svg.append("g").attr("transform", `translate(0,${height - margin.bottom})`).call(d3.axisBottom(x).ticks(5)).attr("color", "#444");
+            svg.append("g").attr("transform", `translate(${margin.left},0)`).call(d3.axisLeft(y).ticks(5)).attr("color", "#444");
+            
+            // Label
+            svg.append("text").attr("x", width-30).attr("y", height-10).text("POWER").attr("fill", "#333").attr("font-size", "10px");
+            svg.append("text").attr("x", 10).attr("y", 20).text("CASUALTIES").attr("fill", "#333").attr("font-size", "10px");
+        }
+
+        // --- 5. WATCHLIST (BAR CHART) ---
+        function drawWatchlist(data) {
+            const container = document.getElementById("viz-watchlist");
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const margin = {top: 20, right: 20, bottom: 20, left: 40};
+
+            // Top 10 by Efficiency (Casualties / Years Active)
+            // We filter for > 0 casualties to find actual threats
+            const topThreats = data.filter(d => d.casualties > 0)
+                .map(d => ({...d, risk: d.casualties / (d.years_active || 1)})) // Avoid divide by zero
+                .sort((a,b) => b.risk - a.risk)
+                .slice(0, 10);
+
+            const svg = d3.select("#viz-watchlist").append("svg").attr("width", width).attr("height", height);
+            
+            const y = d3.scaleBand().range([margin.top, height - margin.bottom]).domain(topThreats.map((d,i) => i)).padding(0.4);
+            const x = d3.scaleLinear().range([margin.left, width - margin.right]).domain([0, d3.max(topThreats, d => d.risk)]);
+
+            svg.selectAll("rect")
+                .data(topThreats).enter().append("rect")
+                .attr("y", (d,i) => y(i))
+                .attr("x", margin.left)
+                .attr("height", y.bandwidth())
+                .attr("width", d => x(d.risk) - margin.left)
+                .attr("fill", d => d.is_good ? colorGood : colorBad)
+                .on("mouseover", (e, d) => {
+                    tooltip.style("opacity", 1).html(`<div class="tooltip-header">RISK SCORE: ${d.risk.toFixed(2)}</div>Casualties: ${d.casualties}<br>Years Active: ${d.years_active}`)
+                        .style("left", (e.pageX+10)+"px").style("top", (e.pageY-10)+"px");
+                })
+                .on("mouseout", () => tooltip.style("opacity", 0));
+
+            // ID Labels
+            svg.selectAll("text")
+                .data(topThreats).enter().append("text")
+                .attr("y", (d,i) => y(i) + y.bandwidth()/1.5)
+                .attr("x", margin.left + 5)
+                .text(d => d.is_good ? "HERO" : "VILLAIN")
+                .attr("font-size", "8px")
+                .attr("fill", "#000")
+                .style("pointer-events", "none");
+        }
+
+        // --- 6. CAREER ARC (AREA CHART) ---
+        function drawCareerArc(data) {
+            const container = document.getElementById("viz-career");
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const margin = {top: 20, right: 20, bottom: 30, left: 40};
+
+            // Bin data by Years Active to get Avg Approval
+            const bins = d3.bin().domain([0, d3.max(rawData, d => d.years_active)]).thresholds(20)(data.map(d => d.years_active));
+            const trends = bins.map(bin => {
+                // Find original objects in this bin range
+                const matches = data.filter(d => d.years_active >= bin.x0 && d.years_active < bin.x1);
+                const avgApp = matches.length > 0 ? d3.mean(matches, d => d.approval) : 0;
+                return { year: bin.x0, approval: avgApp };
+            }).filter(d => d.approval > 0); // Remove empty bins
+
+            const svg = d3.select("#viz-career").append("svg").attr("width", width).attr("height", height);
+
+            const x = d3.scaleLinear().domain(d3.extent(trends, d => d.year)).range([margin.left, width - margin.right]);
+            const y = d3.scaleLinear().domain([0, 100]).range([height - margin.bottom, margin.top]);
+
+            const area = d3.area()
+                .curve(d3.curveMonotoneX)
+                .x(d => x(d.year))
+                .y0(height - margin.bottom)
+                .y1(d => y(d.approval));
+            
+            // Gradient
+            const defs = svg.append("defs");
+            const grad = defs.append("linearGradient").attr("id", "career-grad").attr("x1", "0").attr("y1", "0").attr("x2", "0").attr("y2", "1");
+            grad.append("stop").attr("offset", "0%").attr("stop-color", "var(--accent-good)").attr("stop-opacity", 0.5);
+            grad.append("stop").attr("offset", "100%").attr("stop-color", "var(--accent-good)").attr("stop-opacity", 0);
+
+            svg.append("path")
+                .datum(trends)
+                .attr("fill", "url(#career-grad)")
+                .attr("d", area)
+                .attr("stroke", "var(--accent-good)")
+                .attr("stroke-width", 2);
+
+            // Axes
+            svg.append("g").attr("transform", `translate(0,${height - margin.bottom})`).call(d3.axisBottom(x).ticks(10)).attr("color", "#444");
+            svg.append("g").attr("transform", `translate(${margin.left},0)`).call(d3.axisLeft(y).ticks(5)).attr("color", "#444");
+        }
+
+    </script>
+</body>
+</html>
