@@ -1,441 +1,708 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime Character Data Story</title>
+    <title>ANIME.DATA // Artifacts</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .loading-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.98); z-index: 50;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
+    <!-- Chart.js for RPG Stats -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['Orbitron', 'sans-serif'],
+                        body: ['Rajdhani', 'sans-serif'],
+                    },
+                    colors: {
+                        cyber: {
+                            dark: '#0f172a',
+                            light: '#1e293b',
+                            accent: '#06b6d4', // Cyan
+                            neon: '#f472b6',   // Pink
+                            success: '#10b981'
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
         }
-        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
+        
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .text-glow {
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-slate-950 text-slate-100 font-body bg-[url('https://grainy-gradients.vercel.app/noise.svg')] min-h-screen">
 
-    <!-- Enhanced Loading Screen with Debug Info -->
-    <div id="loading" class="loading-overlay p-8 text-center">
-        <div id="spinner" class="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
-        
-        <h2 id="loading-title" class="text-2xl font-bold text-indigo-900">Initializing...</h2>
-        <p id="loading-msg" class="text-slate-500 mt-2">Checking for dataset...</p>
-        
-        <!-- Debug Console Output -->
-        <div id="debug-console" class="mt-6 text-left bg-slate-900 text-green-400 p-4 rounded font-mono text-xs w-full max-w-lg hidden overflow-x-auto">
-            > System initialized...
+    <!-- Loading Screen -->
+    <div id="loading" class="fixed inset-0 z-50 bg-slate-950 flex flex-col justify-center items-center p-4 transition-opacity duration-500">
+        <div class="relative w-24 h-24">
+            <div class="absolute inset-0 border-t-4 border-cyber-accent rounded-full animate-spin"></div>
+            <div class="absolute inset-2 border-r-4 border-cyber-neon rounded-full animate-spin animation-delay-150"></div>
         </div>
+        <h2 class="mt-8 text-3xl font-display text-white tracking-widest animate-pulse">INITIALIZING</h2>
+        <p id="loading-msg" class="text-cyber-accent font-mono mt-2">Establishing Neural Link...</p>
+        <div id="debug-console" class="mt-4 text-xs font-mono text-slate-500 max-w-lg text-left hidden"></div>
     </div>
 
-    <!-- Navigation -->
-    <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-                        MAL Data Story
-                    </span>
+    <!-- Navbar / Search -->
+    <nav class="fixed top-0 w-full z-40 border-b border-slate-800 glass-panel">
+        <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
+            <!-- Logo -->
+            <div class="flex items-center gap-2 hidden md:flex">
+                <div class="w-3 h-12 bg-cyber-accent"></div>
+                <div>
+                    <h1 class="font-display text-2xl font-bold leading-none text-white">ANIME<span class="text-cyber-accent">.DATA</span></h1>
+                    <p class="text-xs text-slate-400 tracking-[0.2em]">ARCHIVE</p>
                 </div>
-                <div class="flex items-center space-x-8 text-sm font-medium">
-                    <a href="#anatomy" class="text-slate-600 hover:text-indigo-600 transition-colors">Anatomy</a>
-                    <a href="#zodiac" class="text-slate-600 hover:text-indigo-600 transition-colors">Zodiac</a>
-                    <a href="#personas" class="text-slate-600 hover:text-indigo-600 transition-colors">Personas</a>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="flex-1 max-w-2xl relative group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-slate-400 group-focus-within:text-cyber-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
+                <input type="text" id="search-input" 
+                    class="block w-full pl-12 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-none focus:border-cyber-accent focus:ring-1 focus:ring-cyber-accent text-white placeholder-slate-500 font-mono transition-all"
+                    placeholder="Search by Name, Anime title, or Keyword...">
+                <div class="absolute right-2 top-2 text-[10px] text-slate-500 border border-slate-700 px-1 py-0.5 rounded hidden md:block">CMD + K</div>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden text-cyber-accent">
+                <span id="total-count-mobile" class="font-mono font-bold">0</span> Chars
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <header class="bg-white py-20">
-        <div class="max-w-4xl mx-auto px-6 text-center">
-            <h1 class="text-5xl font-extrabold text-slate-900 tracking-tight mb-6">
-                The Hidden Stats of Anime
-            </h1>
-            <p class="text-xl text-slate-600 leading-relaxed">
-                Analyzing <span id="total-chars" class="font-mono font-bold text-indigo-600">0</span> characters to discover the physical traits, 
-                birthdays, and archetypes that define the medium.
-            </p>
-        </div>
-    </header>
+    <!-- Main Content -->
+    <main class="pt-24 pb-20 px-4 max-w-7xl mx-auto space-y-16">
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 space-y-32">
-        <!-- SECTION 1: ANATOMY -->
-        <section id="anatomy" class="scroll-mt-24">
-            <div class="border-l-4 border-indigo-500 pl-6 mb-10">
-                <h2 class="text-3xl font-bold text-slate-900">1. The Anatomy of a Character</h2>
-                <p class="text-slate-500 mt-2">Distribution of heights and blood types across the database.</p>
+        <!-- Hero Stats -->
+        <header class="grid grid-cols-2 md:grid-cols-4 gap-4 font-display text-center">
+            <div class="glass-panel p-6 rounded-sm border-l-2 border-cyber-accent">
+                <div class="text-slate-400 text-sm uppercase tracking-widest mb-1">Total Subjects</div>
+                <div id="stat-total" class="text-3xl md:text-4xl font-bold text-white">0</div>
             </div>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-2 bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-                    <h3 class="text-lg font-semibold mb-6 flex items-center">
-                        <span class="w-8 h-8 bg-blue-100 text-blue-600 rounded flex items-center justify-center mr-3 text-sm">H</span>
-                        Height Distribution
-                    </h3>
-                    <div id="height-container" class="space-y-6"></div>
-                    <p class="text-xs text-slate-400 mt-6 text-right">*Based on characters with valid height data.</p>
-                </div>
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-                    <h3 class="text-lg font-semibold mb-6 flex items-center">
-                        <span class="w-8 h-8 bg-red-100 text-red-600 rounded flex items-center justify-center mr-3 text-sm">B</span>
-                        Blood Types
-                    </h3>
-                    <div id="blood-container" class="grid grid-cols-2 gap-4"></div>
-                </div>
+            <div class="glass-panel p-6 rounded-sm border-l-2 border-cyber-neon">
+                <div class="text-slate-400 text-sm uppercase tracking-widest mb-1">Dominant Trait</div>
+                <div id="stat-trait" class="text-xl md:text-2xl font-bold text-white">Loading...</div>
             </div>
-        </section>
+            <div class="glass-panel p-6 rounded-sm border-l-2 border-purple-500">
+                <div class="text-slate-400 text-sm uppercase tracking-widest mb-1">Avg Height</div>
+                <div id="stat-height" class="text-3xl md:text-4xl font-bold text-white">0 <span class="text-sm">cm</span></div>
+            </div>
+            <div class="glass-panel p-6 rounded-sm border-l-2 border-emerald-500">
+                <div class="text-slate-400 text-sm uppercase tracking-widest mb-1">Top Month</div>
+                <div id="stat-month" class="text-xl md:text-2xl font-bold text-white">...</div>
+            </div>
+        </header>
 
-        <!-- SECTION 2: ZODIAC -->
-        <section id="zodiac" class="scroll-mt-24">
-            <div class="border-l-4 border-purple-500 pl-6 mb-10 flex justify-between items-end">
+        <!-- SECTION 1: RPG STAT GENERATOR (Interactive Cards) -->
+        <section id="rpg-section" class="space-y-6">
+            <div class="flex items-end justify-between border-b border-slate-800 pb-4">
                 <div>
-                    <h2 class="text-3xl font-bold text-slate-900">2. The Anime Calendar</h2>
-                    <p class="text-slate-500 mt-2">Which month produces the most characters?</p>
+                    <h2 class="font-display text-3xl text-white text-glow">SQUAD GENERATOR <span class="text-cyber-neon">// RPG</span></h2>
+                    <p class="text-slate-400 mt-1">Algorithmic stat generation based on bio keywords.</p>
                 </div>
-                <div class="hidden md:block text-right">
-                    <p class="text-sm font-mono text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
-                        Most Popular: <span id="popular-month">...</span>
-                    </p>
-                </div>
+                <button onclick="rerollSquad()" class="px-6 py-2 bg-cyber-accent/10 hover:bg-cyber-accent/20 text-cyber-accent border border-cyber-accent/50 rounded-sm transition-all font-mono text-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    REROLL SQUAD
+                </button>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="calendar-grid"></div>
-            <div id="month-detail" class="mt-8 bg-slate-900 text-white p-8 rounded-2xl hidden">
-                <h3 id="month-title" class="text-2xl font-bold mb-4 border-b border-slate-700 pb-4">Birthdays</h3>
-                <div id="month-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            
+            <!-- Cards Container -->
+            <div id="rpg-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- JS Injected Cards -->
             </div>
         </section>
 
-        <!-- SECTION 3: PERSONAS -->
-        <section id="personas" class="scroll-mt-24">
-            <div class="border-l-4 border-emerald-500 pl-6 mb-10">
-                <h2 class="text-3xl font-bold text-slate-900">3. The Keyword Persona</h2>
-                <p class="text-slate-500 mt-2">Filter characters by common archetypes found in their bios.</p>
+        <!-- SECTION 2: COLOR PSYCHOLOGY -->
+        <section id="color-section" class="space-y-6">
+            <div class="border-b border-slate-800 pb-4">
+                <h2 class="font-display text-3xl text-white text-glow">COLOR THEORY <span class="text-cyber-accent">// ANALYTICS</span></h2>
+                <p class="text-slate-400 mt-1">Filter subjects by hair color to analyze personality tropes.</p>
             </div>
-            <div class="flex flex-wrap gap-3 mb-12" id="keyword-filters"></div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="persona-grid"></div>
+
+            <div class="glass-panel p-8 rounded-lg">
+                <div class="flex flex-wrap justify-center gap-6" id="color-filters">
+                    <!-- JS Injected Bubbles -->
+                </div>
+                
+                <div id="color-results" class="mt-8 pt-8 border-t border-slate-700 hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold text-white">Subjects with <span id="selected-color-name" class="text-cyber-accent">Blue</span> Hair</h3>
+                        <button onclick="openFullList('color')" class="text-sm text-slate-400 hover:text-white underline">View All Matches</button>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4" id="color-preview-grid">
+                        <!-- Small previews -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: ZODIAC CALENDAR -->
+        <section id="zodiac-section" class="space-y-6">
+            <div class="border-b border-slate-800 pb-4">
+                <h2 class="font-display text-3xl text-white text-glow">CHRONO DATA <span class="text-emerald-400">// ZODIAC</span></h2>
+                <p class="text-slate-400 mt-1">Temporal distribution of subject birthdays.</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-px bg-slate-800 border border-slate-800 rounded-lg overflow-hidden" id="calendar-grid">
+                <!-- JS Injected Months -->
+            </div>
         </section>
     </main>
 
-    <footer class="bg-white border-t border-slate-200 py-12">
-        <div class="max-w-7xl mx-auto px-6 text-center text-slate-500 text-sm">
-            <p>Created for Portfolio Project. Data sourced from MyAnimeList Kaggle Dataset.</p>
+    <!-- GLOBAL MODAL (For "Show Everyone" and Character Details) -->
+    <div id="modal-overlay" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex justify-center items-center p-4" onclick="closeModal(event)">
+        
+        <!-- 1. CHARACTER DETAIL MODAL -->
+        <div id="char-modal" class="glass-panel w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-lg border border-cyber-accent/30 shadow-2xl shadow-cyber-accent/20 hidden relative">
+            <button class="absolute top-4 right-4 text-slate-400 hover:text-white" onclick="closeModal(event, true)">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 p-8">
+                <!-- Left: Identity -->
+                <div class="text-center md:text-left">
+                    <div id="modal-avatar" class="w-32 h-32 mx-auto md:mx-0 rounded-full bg-slate-800 flex items-center justify-center text-3xl font-display font-bold text-white border-2 border-cyber-accent shadow-[0_0_15px_rgba(6,182,212,0.5)]">
+                        <!-- Initials -->
+                    </div>
+                    <h2 id="modal-name" class="text-3xl font-display font-bold text-white mt-4 leading-tight">Name</h2>
+                    <div id="modal-id" class="font-mono text-xs text-cyber-accent mt-1 mb-4">ID: #0000</div>
+                    
+                    <!-- RPG Radar Chart Canvas -->
+                    <div class="relative h-64 w-full mt-6">
+                        <canvas id="rpgChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right: Data -->
+                <div class="md:col-span-2 space-y-6">
+                    <!-- Bio -->
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Biographical Data</h3>
+                        <div id="modal-bio" class="text-slate-300 leading-relaxed text-sm max-h-40 overflow-y-auto pr-2 custom-scrollbar"></div>
+                    </div>
+
+                    <!-- Attributes Grid -->
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Physical & Personal Attributes</h3>
+                        <div id="modal-attrs" class="flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <!-- Constellation / Similar Chars -->
+                    <div class="pt-6 border-t border-slate-700">
+                        <h3 class="text-sm font-bold text-cyber-neon uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <span class="w-2 h-2 bg-cyber-neon rounded-full animate-pulse"></span>
+                            Constellation Matches (Similar Archetypes)
+                        </h3>
+                        <div id="modal-related" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <!-- JS Injected Related Chars -->
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </footer>
+
+        <!-- 2. LIST VIEW MODAL (For Months/Colors) -->
+        <div id="list-modal" class="glass-panel w-full max-w-5xl h-[85vh] flex flex-col rounded-lg hidden">
+            <div class="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
+                <h2 id="list-modal-title" class="text-2xl font-display font-bold text-white">Results</h2>
+                <button class="text-slate-400 hover:text-white" onclick="closeModal(event, true)">Close [ESC]</button>
+            </div>
+            
+            <div id="list-grid" class="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto custom-scrollbar flex-1">
+                <!-- Content injected here -->
+            </div>
+            
+            <div class="p-4 border-t border-slate-700 text-center bg-slate-900/50">
+                <button id="load-more-btn" class="text-cyber-accent hover:text-white font-mono text-sm border border-cyber-accent/30 px-4 py-2 rounded hover:bg-cyber-accent/10">LOAD MORE DATA</button>
+            </div>
+        </div>
+
+    </div>
 
     <script>
         // --- CONFIGURATION ---
-        // CHANGE THIS if your folder is named 'Data' or 'dataset'
         const DATA_PATH = 'data/mal_characters_detailed.csv'; 
-
+        
         // --- STATE ---
-        let allCharacters = [];
-        let processedData = { heights: [], bloodTypes: {}, birthMonths: {}, keywords: {} };
-        const KEYWORDS = ["Student", "Demon", "Pirate", "Ninja", "Sword", "Magic", "Captain", "Princess", "Hunter", "Cyborg", "Spirit"];
+        let rawData = []; // Full dataset
+        let activeData = []; // Filtered dataset (by search)
+        let chartInstance = null;
+        let currentListIndices = { start: 0, end: 20, data: [] }; // For pagination
 
-        // --- DEBUGGER ---
-        function log(msg, type="info") {
-            const consoleDiv = document.getElementById('debug-console');
-            consoleDiv.classList.remove('hidden');
-            const color = type === 'error' ? 'text-red-400' : 'text-green-400';
-            consoleDiv.innerHTML += `<div class="${color}">> ${msg}</div>`;
-        }
+        // --- RPG LOGIC ---
+        // Keywords that boost specific stats
+        const STAT_KEYWORDS = {
+            STR: ['sword', 'fight', 'strength', 'muscle', 'warrior', 'battle', 'punch', 'giant', 'strong', 'fighter'],
+            INT: ['smart', 'genius', 'study', 'book', 'scientist', 'plan', 'strategy', 'doctor', 'tech', 'school'],
+            AGI: ['fast', 'speed', 'ninja', 'thief', 'run', 'dash', 'quick', 'dodge', 'fly', 'pilot'],
+            CHA: ['leader', 'captain', 'princess', 'idol', 'beautiful', 'cute', 'charm', 'royal', 'queen', 'king'],
+            MAG: ['magic', 'spell', 'witch', 'wizard', 'demon', 'spirit', 'curse', 'god', 'power', 'mana']
+        };
 
-        function showError(title, message) {
-            document.getElementById('spinner').classList.remove('animate-spin', 'border-t-indigo-600', 'border-indigo-200');
-            document.getElementById('spinner').classList.add('bg-red-500', 'border-0');
-            document.getElementById('loading-title').textContent = title;
-            document.getElementById('loading-title').className = "text-2xl font-bold text-red-600";
-            document.getElementById('loading-msg').innerHTML = message;
-        }
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', init);
 
-        // --- UTILITIES ---
-        function getColorFromName(name) {
-            const colors = ['bg-red-100 text-red-700', 'bg-orange-100 text-orange-700', 'bg-amber-100 text-amber-700', 'bg-green-100 text-green-700', 'bg-emerald-100 text-emerald-700', 'bg-teal-100 text-teal-700', 'bg-cyan-100 text-cyan-700', 'bg-blue-100 text-blue-700', 'bg-indigo-100 text-indigo-700', 'bg-violet-100 text-violet-700', 'bg-purple-100 text-purple-700', 'bg-fuchsia-100 text-fuchsia-700', 'bg-pink-100 text-pink-700', 'bg-rose-100 text-rose-700'];
-            let hash = 0;
-            for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-            return colors[Math.abs(hash) % colors.length];
-        }
-        function getInitials(name) {
-            if (!name) return "??";
-            const parts = name.split(/[ ,]+/);
-            if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
-            return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
-        }
-        function getAttribute(jsonString, key) {
-            try {
-                if (!jsonString || jsonString === '[]') return null;
-                const attrs = JSON.parse(jsonString);
-                const found = attrs.find(a => a.name === key);
-                return found ? found.value : null;
-            } catch (e) { return null; }
-        }
-        function parseHeight(val) {
-            if (!val) return null;
-            const match = val.match(/(\d+)/);
-            return match ? parseInt(match[0]) : null;
-        }
-        function parseMonth(val) {
-            if (!val) return null;
-            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            for (let m of months) { if (val.includes(m)) return m; }
-            return null;
+        function log(msg) {
+            const c = document.getElementById('debug-console');
+            c.classList.remove('hidden');
+            c.innerHTML += `> ${msg}<br>`;
         }
 
-        // --- INITIALIZATION (WITH FIX) ---
         async function init() {
-            log("Starting application...");
-            log(`Attempting to fetch: ${DATA_PATH}`);
-            
-            // 1. Verify File Exists BEFORE Parsing
             try {
-                const response = await fetch(DATA_PATH, { method: 'HEAD' });
-                if (!response.ok) {
-                    throw new Error(`Server returned ${response.status} ${response.statusText}`);
-                }
-                log("File found! Downloading ~45MB...");
-            } catch (err) {
-                log(`FETCH ERROR: ${err.message}`, "error");
-                showError("Dataset Not Found", `
-                    Could not find the file at: <code class="bg-slate-200 px-1 rounded text-sm text-red-800">${DATA_PATH}</code><br><br>
-                    <strong>Check your GitHub Repo:</strong><br>
-                    1. Is the folder named <code>data</code> or <code>Data</code>? (Case sensitive!)<br>
-                    2. Is the file named exactly <code>mal_characters_detailed.csv</code>?<br>
-                    3. Did you actually 'git push' the 45MB file?
-                `);
-                return;
-            }
-
-            // 2. Parse
-            Papa.parse(DATA_PATH, {
-                download: true,
-                header: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    log("Parsing complete!");
-                    if(results.data.length === 0) {
-                        showError("Dataset Empty", "The CSV file was found but appears to be empty.");
-                        return;
+                const res = await fetch(DATA_PATH, { method: 'HEAD' });
+                if(!res.ok) throw new Error("File not found");
+                
+                Papa.parse(DATA_PATH, {
+                    download: true,
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: (results) => {
+                        // 1. Filter valid characters
+                        rawData = results.data.filter(c => 
+                            c.name && c.description && c.description.length > 30
+                        ).map(c => ({
+                            ...c,
+                            // Pre-calculate parsed attributes for speed
+                            parsedAttrs: parseAttributes(c.attributes),
+                            rpgStats: calculateRPG(c.description)
+                        }));
+                        
+                        activeData = [...rawData];
+                        updateDashboard();
+                        
+                        document.getElementById('loading').classList.add('opacity-0', 'pointer-events-none');
+                        setTimeout(() => document.getElementById('loading').remove(), 600);
+                    },
+                    error: (err) => {
+                        document.getElementById('loading-msg').innerHTML = `<span class="text-red-500">ERROR: ${err.message}</span>`;
                     }
-                    document.getElementById('loading-msg').textContent = "Analyzing characters...";
-                    processDataset(results.data);
-                },
-                error: function(err) {
-                    log(`PARSING ERROR: ${err.message}`, "error");
-                    showError("Parsing Error", err.message);
-                }
-            });
-        }
-
-        function processDataset(data) {
-            log(`Processing ${data.length} rows...`);
-            
-            // Filter for "Interesting" characters
-            allCharacters = data.filter(c => 
-                c.name && 
-                c.description && c.description.length > 50 && 
-                c.attributes && c.attributes.length > 10
-            );
-
-            log(`Filtered down to ${allCharacters.length} valid characters.`);
-            document.getElementById('total-chars').textContent = allCharacters.length.toLocaleString();
-
-            // 1. Heights & Blood Types
-            const heightBuckets = { "Short (<150)": [], "Average (150-170)": [], "Tall (170-185)": [], "Giant (>185)": [] };
-            const bloodCounts = {};
-            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            months.forEach(m => processedData.birthMonths[m] = []);
-
-            allCharacters.forEach(char => {
-                const heightStr = getAttribute(char.attributes, "Height");
-                const bloodStr = getAttribute(char.attributes, "Blood Type");
-                const bdayStr = getAttribute(char.attributes, "Birthday") || getAttribute(char.attributes, "Birthdate");
-
-                const h = parseHeight(heightStr);
-                if (h && h > 50 && h < 300) {
-                    if (h < 150) heightBuckets["Short (<150)"].push(char);
-                    else if (h <= 170) heightBuckets["Average (150-170)"].push(char);
-                    else if (h <= 185) heightBuckets["Tall (170-185)"].push(char);
-                    else heightBuckets["Giant (>185)"].push(char);
-                }
-
-                if (bloodStr) {
-                    const cleanBlood = bloodStr.replace(' Type', '').trim();
-                    bloodCounts[cleanBlood] = (bloodCounts[cleanBlood] || 0) + 1;
-                }
-
-                const m = parseMonth(bdayStr);
-                if (m) processedData.birthMonths[m].push(char);
-            });
-
-            processedData.heights = heightBuckets;
-            processedData.bloodTypes = bloodCounts;
-
-            renderAnatomy();
-            renderZodiac();
-            renderPersonas("Student");
-
-            document.getElementById('loading').style.display = 'none';
-        }
-
-        function renderAnatomy() {
-            const container = document.getElementById('height-container');
-            let maxCount = 0;
-            Object.values(processedData.heights).forEach(arr => maxCount = Math.max(maxCount, arr.length));
-
-            for (const [label, chars] of Object.entries(processedData.heights)) {
-                const percentage = (chars.length / maxCount) * 100;
-                const exampleChar = chars[0] ? chars[0].name : "None"; 
-                
-                const html = `
-                    <div>
-                        <div class="flex justify-between text-sm font-medium mb-1">
-                            <span>${label}</span>
-                            <span class="text-slate-500">${chars.length} chars</span>
-                        </div>
-                        <div class="w-full bg-slate-100 rounded-full h-4 overflow-hidden">
-                            <div class="bg-indigo-500 h-4 rounded-full" style="width: ${percentage}%"></div>
-                        </div>
-                        <div class="text-xs text-slate-400 mt-1 italic">Example: ${exampleChar}</div>
-                    </div>
-                `;
-                container.innerHTML += html;
+                });
+            } catch(e) {
+                document.getElementById('loading-msg').innerHTML = `<span class="text-red-500">Check /data/ folder path.</span>`;
             }
-
-            const bloodContainer = document.getElementById('blood-container');
-            const sortedBlood = Object.entries(processedData.bloodTypes)
-                .sort(([,a], [,b]) => b - a).slice(0, 4);
-
-            sortedBlood.forEach(([type, count]) => {
-                const html = `
-                    <div class="bg-slate-50 p-4 rounded-lg text-center border border-slate-100">
-                        <div class="text-2xl font-bold text-slate-800">${type}</div>
-                        <div class="text-xs text-slate-500 uppercase tracking-wide mt-1">Type</div>
-                        <div class="text-sm font-mono text-indigo-600 mt-2">${count}</div>
-                    </div>
-                `;
-                bloodContainer.innerHTML += html;
-            });
         }
 
-        function renderZodiac() {
-            const grid = document.getElementById('calendar-grid');
-            const months = Object.keys(processedData.birthMonths);
-            let maxM = 0;
-            let maxMonthName = "";
-            months.forEach(m => {
-                const len = processedData.birthMonths[m].length;
-                if(len > maxM) { maxM = len; maxMonthName = m; }
-            });
-
-            document.getElementById('popular-month').textContent = maxMonthName;
-
-            months.forEach(m => {
-                const count = processedData.birthMonths[m].length;
-                const card = document.createElement('div');
-                card.className = "bg-white p-6 rounded-xl border border-slate-100 cursor-pointer transition-all hover:border-purple-400 hover:shadow-lg group";
-                card.onclick = () => showMonthDetails(m);
-                
-                card.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <h4 class="text-lg font-bold text-slate-700 group-hover:text-purple-600">${m.substring(0, 3)}</h4>
-                        <span class="text-xs font-mono bg-slate-100 px-2 py-1 rounded text-slate-500">${count}</span>
-                    </div>
-                    <div class="mt-4 w-full bg-purple-100 h-1.5 rounded-full overflow-hidden">
-                        <div class="bg-purple-600 h-full" style="width: ${(count/maxM)*100}%"></div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        function showMonthDetails(month) {
-            const container = document.getElementById('month-detail');
-            const title = document.getElementById('month-title');
-            const list = document.getElementById('month-list');
-            container.classList.remove('hidden');
-            title.textContent = `${month} Birthdays`;
-            list.innerHTML = '';
-
-            const chars = processedData.birthMonths[month]
-                .sort((a,b) => b.description.length - a.description.length)
-                .slice(0, 9);
-
-            chars.forEach(c => {
-                const colorClass = getColorFromName(c.name);
-                const initials = getInitials(c.name);
-                const day = getAttribute(c.attributes, "Birthday") || "?";
-                list.innerHTML += `
-                    <div class="flex items-center p-3 bg-slate-800 rounded-lg border border-slate-700">
-                        <div class="h-10 w-10 rounded-full ${colorClass} flex items-center justify-center font-bold text-sm mr-3 flex-shrink-0">
-                            ${initials}
-                        </div>
-                        <div>
-                            <div class="font-bold text-sm text-slate-200 truncate">${c.name}</div>
-                            <div class="text-xs text-slate-500">${day}</div>
-                        </div>
-                    </div>
-                `;
-            });
-            container.scrollIntoView({behavior: 'smooth', block: 'nearest'});
-        }
-
-        function renderPersonas(activeKeyword) {
-            const filterContainer = document.getElementById('keyword-filters');
-            filterContainer.innerHTML = '';
-            KEYWORDS.forEach(kw => {
-                const btn = document.createElement('button');
-                const isActive = kw === activeKeyword;
-                btn.className = `px-4 py-2 rounded-full text-sm font-medium transition-all ${isActive ? 'bg-emerald-600 text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:border-emerald-400'}`;
-                btn.textContent = kw;
-                btn.onclick = () => renderPersonas(kw);
-                filterContainer.appendChild(btn);
-            });
-
-            const grid = document.getElementById('persona-grid');
-            grid.innerHTML = '';
-            const matches = allCharacters.filter(c => c.description.toLowerCase().includes(activeKeyword.toLowerCase()))
-                .sort((a,b) => b.description.length - a.description.length)
-                .slice(0, 12);
-
-            if (matches.length === 0) {
-                grid.innerHTML = `<div class="col-span-3 text-center text-slate-400 py-12">No characters found matching "${activeKeyword}".</div>`;
+        // --- SEARCH ENGINE ---
+        const searchInput = document.getElementById('search-input');
+        searchInput.addEventListener('input', (e) => {
+            const q = e.target.value.toLowerCase();
+            if(q.length < 2) {
+                if(activeData.length !== rawData.length) {
+                    activeData = [...rawData];
+                    updateDashboard();
+                }
                 return;
             }
+            
+            // Search Name AND Description (for Anime Title)
+            activeData = rawData.filter(c => 
+                c.name.toLowerCase().includes(q) || 
+                (c.description && c.description.toLowerCase().includes(q))
+            );
+            updateDashboard();
+        });
 
-            matches.forEach(c => {
-                const colorClass = getColorFromName(c.name);
-                const initials = getInitials(c.name);
-                const snippet = c.description.substring(0, 120) + "...";
+        // --- CORE PROCESSING ---
+        function updateDashboard() {
+            document.getElementById('stat-total').innerText = activeData.length.toLocaleString();
+            
+            // Render Sections
+            renderRPG();
+            renderColorPsychology();
+            renderZodiac();
+            
+            // Calculate Hero Stats
+            const heights = activeData.map(c => {
+                const h = getAttr(c.parsedAttrs, 'Height');
+                return h ? parseInt(h.match(/\d+/)) : 0;
+            }).filter(h => h > 0 && h < 300);
+            
+            const avgHeight = heights.length ? Math.round(heights.reduce((a,b)=>a+b,0)/heights.length) : 0;
+            document.getElementById('stat-height').innerHTML = `${avgHeight} <span class="text-sm text-slate-500">cm</span>`;
+        }
+
+        // --- HELPER: RPG STATS ---
+        function calculateRPG(text) {
+            const stats = { STR: 20, INT: 20, AGI: 20, CHA: 20, MAG: 20 };
+            if(!text) return stats;
+            const lower = text.toLowerCase();
+            
+            // Base stats on description length (more lore = stronger)
+            const baseBonus = Math.min(Math.floor(text.length / 100), 30);
+            for(let s in stats) stats[s] += baseBonus;
+
+            // Keyword analysis
+            for(let [stat, words] of Object.entries(STAT_KEYWORDS)) {
+                words.forEach(w => {
+                    if(lower.includes(w)) stats[stat] += 15;
+                });
+            }
+            
+            // Cap at 100
+            for(let s in stats) stats[s] = Math.min(stats[s], 100);
+            return stats;
+        }
+
+        function getAttr(attrs, key) {
+            if(!attrs) return null;
+            const f = attrs.find(a => a.name === key);
+            return f ? f.value : null;
+        }
+
+        function parseAttributes(jsonStr) {
+            try { return JSON.parse(jsonStr || '[]'); } catch(e) { return []; }
+        }
+
+        // --- SECTION 1: RPG RENDERER ---
+        function renderRPG() {
+            const grid = document.getElementById('rpg-grid');
+            grid.innerHTML = '';
+            
+            // Pick 6 random high-quality characters from activeData
+            const squad = activeData
+                .filter(c => c.description.length > 200) // High quality only
+                .sort(() => 0.5 - Math.random())
+                .slice(0, 6);
+                
+            squad.forEach(c => {
+                const stats = c.rpgStats;
+                const mainStat = Object.keys(stats).reduce((a, b) => stats[a] > stats[b] ? a : b);
+                
                 grid.innerHTML += `
-                    <div class="card-hover bg-white rounded-xl p-6 border border-slate-200 flex flex-col h-full">
-                        <div class="flex items-center mb-4">
-                            <div class="h-12 w-12 rounded-full ${colorClass} flex items-center justify-center font-bold text-lg mr-4 shadow-sm">
-                                ${initials}
+                    <div onclick="showCharacter(${c.character_id})" class="glass-panel p-5 rounded-sm border-t-4 border-${getColorForStat(mainStat)} hover:bg-slate-800 transition-all cursor-pointer group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-2 opacity-10 font-display text-4xl font-bold group-hover:opacity-20 transition-opacity">${mainStat}</div>
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 rounded bg-slate-700 flex items-center justify-center font-bold text-${getColorForStat(mainStat)} border border-slate-600">
+                                ${getInitials(c.name)}
                             </div>
                             <div>
-                                <h4 class="font-bold text-slate-900 line-clamp-1">${c.name}</h4>
-                                <span class="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded">ID: ${c.character_id}</span>
+                                <h3 class="font-display font-bold text-lg leading-none truncate max-w-[150px]">${c.name}</h3>
+                                <span class="text-xs font-mono text-slate-400">Class: ${mainStat}-Type</span>
                             </div>
                         </div>
-                        <p class="text-slate-600 text-sm leading-relaxed mb-4 flex-grow">${snippet}</p>
-                        <div class="border-t border-slate-100 pt-4 mt-auto flex flex-wrap gap-2">
-                            ${getAttribute(c.attributes, "Height") ? `<span class="text-xs bg-slate-50 text-slate-500 px-2 py-1 rounded border border-slate-100">${getAttribute(c.attributes, "Height")}</span>` : ''}
+                        <div class="space-y-2 font-mono text-xs">
+                            <div class="flex justify-between"><span>STR</span> <div class="w-32 bg-slate-700 h-2 rounded-full overflow-hidden"><div class="bg-red-500 h-full" style="width: ${stats.STR}%"></div></div></div>
+                            <div class="flex justify-between"><span>INT</span> <div class="w-32 bg-slate-700 h-2 rounded-full overflow-hidden"><div class="bg-blue-500 h-full" style="width: ${stats.INT}%"></div></div></div>
+                            <div class="flex justify-between"><span>MAG</span> <div class="w-32 bg-slate-700 h-2 rounded-full overflow-hidden"><div class="bg-purple-500 h-full" style="width: ${stats.MAG}%"></div></div></div>
                         </div>
                     </div>
                 `;
             });
         }
+        
+        function getColorForStat(stat) {
+            const map = { STR: 'red-500', INT: 'blue-500', AGI: 'green-500', CHA: 'yellow-500', MAG: 'purple-500' };
+            return map[stat] || 'slate-500';
+        }
 
-        init();
+        function rerollSquad() { renderRPG(); }
+
+        // --- SECTION 2: COLOR PSYCHOLOGY ---
+        function renderColorPsychology() {
+            // Aggregate Hair Colors
+            const colorCounts = {};
+            activeData.forEach(c => {
+                const hair = getAttr(c.parsedAttrs, 'Hair Color');
+                if(hair) {
+                    // Simplify "Dark Blue" -> "Blue"
+                    let simple = hair.split(' ')[0].replace(',',''); 
+                    if(['Light','Dark','Pale'].includes(simple) && hair.split(' ')[1]) simple = hair.split(' ')[1];
+                    colorCounts[simple] = (colorCounts[simple] || 0) + 1;
+                }
+            });
+
+            const sorted = Object.entries(colorCounts).sort(([,a],[,b]) => b-a).slice(0, 10);
+            const container = document.getElementById('color-filters');
+            container.innerHTML = '';
+            
+            // Color Mappings for CSS
+            const cssMap = {
+                'Black': 'bg-slate-900 border-slate-600', 'Blonde': 'bg-yellow-300 text-black', 'Yellow': 'bg-yellow-400 text-black',
+                'Brown': 'bg-amber-800', 'Blue': 'bg-blue-600', 'Red': 'bg-red-600', 'Pink': 'bg-pink-400 text-black',
+                'White': 'bg-slate-100 text-black', 'Green': 'bg-green-600', 'Purple': 'bg-purple-600', 'Orange': 'bg-orange-500',
+                'Silver': 'bg-slate-300 text-black', 'Grey': 'bg-slate-500'
+            };
+
+            document.getElementById('stat-trait').textContent = sorted[0] ? sorted[0][0] : "None";
+
+            sorted.forEach(([color, count]) => {
+                const css = cssMap[color] || 'bg-slate-700';
+                container.innerHTML += `
+                    <button onclick="filterByColor('${color}')" class="group flex flex-col items-center gap-2 transition-transform hover:scale-110">
+                        <div class="w-12 h-12 rounded-full shadow-lg ${css} border border-white/10 flex items-center justify-center text-xs font-bold">
+                            ${count > 999 ? (count/1000).toFixed(1)+'k' : count}
+                        </div>
+                        <span class="text-xs uppercase font-mono text-slate-400 group-hover:text-white">${color}</span>
+                    </button>
+                `;
+            });
+        }
+
+        function filterByColor(color) {
+            // Show results in the preview box
+            document.getElementById('color-results').classList.remove('hidden');
+            document.getElementById('selected-color-name').textContent = color;
+            document.getElementById('selected-color-name').className = `text-${getColorForStat('INT')}`; // dynamic color tricky, sticky to blue for now
+            
+            const matches = activeData.filter(c => {
+                const h = getAttr(c.parsedAttrs, 'Hair Color');
+                return h && h.includes(color);
+            });
+
+            const grid = document.getElementById('color-preview-grid');
+            grid.innerHTML = '';
+            
+            // Show first 6
+            matches.slice(0, 6).forEach(c => {
+                grid.innerHTML += createMiniCard(c);
+            });
+            
+            // Set up "View All"
+            window.currentColorFilter = color;
+        }
+
+        // --- SECTION 3: ZODIAC ---
+        function renderZodiac() {
+            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+            
+            const monthCounts = {};
+            let max = 0;
+            let topMonth = '';
+
+            months.forEach(m => {
+                const count = activeData.filter(c => {
+                    const b = getAttr(c.parsedAttrs, 'Birthday') || getAttr(c.parsedAttrs, 'Birthdate');
+                    return b && b.includes(m);
+                }).length;
+                monthCounts[m] = count;
+                if(count > max) { max = count; topMonth = m; }
+            });
+
+            document.getElementById('stat-month').innerText = topMonth.substring(0, 3).toUpperCase();
+
+            months.forEach(m => {
+                const count = monthCounts[m];
+                const opacity = 0.2 + ((count / max) * 0.8);
+                
+                grid.innerHTML += `
+                    <div onclick="openFullList('month', '${m}')" class="bg-slate-900 p-4 hover:bg-cyber-accent/20 transition-colors cursor-pointer border-b border-r border-slate-800 group relative">
+                        <div class="absolute bottom-0 left-0 h-1 bg-cyber-accent transition-all duration-500" style="width: ${(count/max)*100}%"></div>
+                        <h4 class="text-slate-400 font-mono text-xs uppercase mb-1 group-hover:text-white">${m.substring(0,3)}</h4>
+                        <div class="text-2xl font-display font-bold text-white">${count}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- MODALS & LISTS ---
+        
+        function createMiniCard(c) {
+            return `
+                <div onclick="showCharacter(${c.character_id})" class="bg-slate-800 p-3 rounded border border-slate-700 hover:border-cyber-accent cursor-pointer flex items-center gap-3">
+                    <div class="w-8 h-8 rounded bg-slate-700 flex-shrink-0 flex items-center justify-center text-xs font-bold text-slate-300">
+                        ${getInitials(c.name)}
+                    </div>
+                    <div class="truncate text-sm font-bold text-slate-200">${c.name}</div>
+                </div>
+            `;
+        }
+
+        window.openFullList = function(type, val) {
+            const filterVal = val || window.currentColorFilter;
+            const modal = document.getElementById('modal-overlay');
+            const listModal = document.getElementById('list-modal');
+            const title = document.getElementById('list-modal-title');
+            
+            modal.classList.remove('hidden');
+            listModal.classList.remove('hidden');
+            document.getElementById('char-modal').classList.add('hidden');
+            
+            title.innerText = `${type === 'month' ? filterVal : filterVal + ' Hair'} Characters`;
+            
+            // Filter Data for the list
+            let matches = [];
+            if(type === 'month') {
+                matches = activeData.filter(c => {
+                    const b = getAttr(c.parsedAttrs, 'Birthday') || getAttr(c.parsedAttrs, 'Birthdate');
+                    return b && b.includes(filterVal);
+                });
+            } else {
+                matches = activeData.filter(c => {
+                    const h = getAttr(c.parsedAttrs, 'Hair Color');
+                    return h && h.includes(filterVal);
+                });
+            }
+
+            // Setup Pagination
+            currentListIndices.data = matches;
+            currentListIndices.start = 0;
+            currentListIndices.end = 40; // Load 40 at a time
+            
+            renderListBatch(true); // True = reset
+            
+            document.getElementById('load-more-btn').onclick = () => renderListBatch(false);
+        };
+
+        function renderListBatch(reset) {
+            const grid = document.getElementById('list-grid');
+            if(reset) grid.innerHTML = '';
+            
+            const { data, start, end } = currentListIndices;
+            const batch = data.slice(start, end);
+            
+            batch.forEach(c => {
+                // Detailed Card for List View
+                const bio = c.description ? c.description.substring(0, 60)+'...' : 'No data.';
+                grid.innerHTML += `
+                    <div onclick="showCharacter(${c.character_id})" class="bg-slate-800/50 p-4 rounded border border-slate-700 hover:border-cyber-accent hover:bg-slate-800 cursor-pointer transition-all">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-white truncate pr-2">${c.name}</h4>
+                            <span class="text-[10px] font-mono bg-slate-700 px-1 rounded text-cyber-accent">#${c.character_id}</span>
+                        </div>
+                        <p class="text-xs text-slate-400">${bio}</p>
+                    </div>
+                `;
+            });
+
+            currentListIndices.start = end;
+            currentListIndices.end = end + 40;
+            
+            // Hide button if done
+            const btn = document.getElementById('load-more-btn');
+            if(currentListIndices.start >= data.length) btn.classList.add('hidden');
+            else btn.classList.remove('hidden');
+        }
+
+        // --- CHARACTER DETAIL ---
+        window.showCharacter = function(id) {
+            const c = rawData.find(x => x.character_id == id);
+            if(!c) return;
+
+            const modal = document.getElementById('modal-overlay');
+            const charModal = document.getElementById('char-modal');
+            const listModal = document.getElementById('list-modal');
+            
+            modal.classList.remove('hidden');
+            charModal.classList.remove('hidden');
+            listModal.classList.add('hidden');
+            
+            // Populate
+            document.getElementById('modal-name').innerText = c.name;
+            document.getElementById('modal-id').innerText = `MAL ID: #${c.character_id}`;
+            document.getElementById('modal-bio').innerText = c.description || "No classified biography available.";
+            document.getElementById('modal-avatar').innerText = getInitials(c.name);
+            document.getElementById('modal-avatar').className = `w-32 h-32 mx-auto md:mx-0 rounded-full flex items-center justify-center text-3xl font-display font-bold text-white border-2 shadow-[0_0_15px_rgba(255,255,255,0.2)] bg-slate-800`;
+
+            // Attributes
+            const attrContainer = document.getElementById('modal-attrs');
+            attrContainer.innerHTML = '';
+            if(c.parsedAttrs.length) {
+                c.parsedAttrs.forEach(a => {
+                    attrContainer.innerHTML += `<span class="px-3 py-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300"><strong class="text-cyber-accent">${a.name}:</strong> ${a.value}</span>`;
+                });
+            } else {
+                attrContainer.innerHTML = '<span class="text-slate-600 text-sm italic">No physical attributes on file.</span>';
+            }
+
+            // RPG Chart
+            renderRadarChart(c.rpgStats);
+
+            // Constellation (Keyword Matching)
+            const relatedContainer = document.getElementById('modal-related');
+            relatedContainer.innerHTML = '';
+            
+            // Find characters with similar stats or keywords
+            const keywords = c.description.split(' ').filter(w => w.length > 5).slice(0, 5); // primitive keyword extraction
+            const related = rawData.filter(r => 
+                r.character_id !== c.character_id &&
+                keywords.some(k => r.description.includes(k))
+            ).slice(0, 4);
+
+            if(related.length === 0) {
+                // Fallback to random if no text matches
+                relatedContainer.innerHTML = '<div class="col-span-4 text-center text-slate-500 text-xs">No constellation matches found in local cluster.</div>';
+            } else {
+                related.forEach(r => {
+                    relatedContainer.innerHTML += `
+                        <div onclick="showCharacter(${r.character_id})" class="p-2 bg-slate-800 rounded border border-slate-700 hover:border-cyber-neon cursor-pointer flex items-center gap-2">
+                            <div class="w-6 h-6 bg-slate-900 rounded flex items-center justify-center text-[10px]">${getInitials(r.name)}</div>
+                            <div class="text-xs truncate text-slate-300">${r.name}</div>
+                        </div>
+                    `;
+                });
+            }
+        };
+
+        function renderRadarChart(stats) {
+            const ctx = document.getElementById('rpgChart');
+            if(chartInstance) chartInstance.destroy();
+            
+            chartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['STR', 'INT', 'AGI', 'CHA', 'MAG'],
+                    datasets: [{
+                        label: 'Stats',
+                        data: [stats.STR, stats.INT, stats.AGI, stats.CHA, stats.MAG],
+                        backgroundColor: 'rgba(6, 182, 212, 0.2)',
+                        borderColor: '#06b6d4',
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#fff'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            angleLines: { color: '#334155' },
+                            grid: { color: '#334155' },
+                            pointLabels: { color: '#94a3b8', font: { family: 'Orbitron' } },
+                            ticks: { display: false, max: 100 }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        window.closeModal = function(e, force) {
+            if(force || e.target.id === 'modal-overlay') {
+                document.getElementById('modal-overlay').classList.add('hidden');
+            }
+        };
+
+        function getInitials(name) {
+            if(!name) return "?";
+            const p = name.split(/[ ,]+/);
+            return (p[0][0] + (p[1]?p[1][0]:'')).toUpperCase();
+        }
     </script>
 </body>
 </html>
