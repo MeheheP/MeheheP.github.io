@@ -1,11 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mehul Parashar | Data Scientist</title>
     
-    <!-- Google tag (gtag.js) -->
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        core: '#050505',
+                        card: '#0f0f0f',
+                        gold: '#D4AF37',
+                        wine: '#722F37',
+                        spotify: '#1DB954',
+                        geo: '#38bdf8',   /* Light Blue for Geo */
+                        neural: '#a855f7', /* Purple for AI */
+                        finance: '#10b981', /* Emerald for Money/Fraud */
+                        primary: '#F0F0F0',
+                        secondary: '#888888',
+                        subtle: 'rgba(212, 175, 55, 0.15)',
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Manrope"', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'grain': "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E\")",
+                        'visual-wine': "radial-gradient(circle, #722F37 10%, transparent 10%), radial-gradient(circle, #722F37 10%, transparent 10%)",
+                        'visual-hero': "radial-gradient(#E63946 1px, transparent 1px), radial-gradient(#E63946 1px, transparent 1px)",
+                        'visual-spotify': "radial-gradient(#1DB954 1px, transparent 1px), radial-gradient(#1DB954 1px, transparent 1px)",
+                        'visual-geo': "radial-gradient(#38bdf8 1px, transparent 1px), radial-gradient(#38bdf8 1px, transparent 1px)",
+                        'visual-neural': "radial-gradient(#a855f7 1px, transparent 1px), radial-gradient(#a855f7 1px, transparent 1px)",
+                        'visual-finance': "radial-gradient(#10b981 1px, transparent 1px), radial-gradient(#10b981 1px, transparent 1px)",
+                    },
+                    backgroundSize: {
+                        'pattern': '20px 20px',
+                    },
+                    backgroundPosition: {
+                        'pattern': '0 0, 10px 10px',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Utilities not easily mapped to Tailwind defaults */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Precise Header Line for H2 */
+        .h2-line::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 105%;
+            width: 60px;
+            height: 1px;
+            background-color: #D4AF37;
+        }
+
+        /* Hover effect for Button Fill */
+        .btn-hover-fill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background-color: #D4AF37;
+            transition: width 0.4s ease;
+            z-index: -1;
+        }
+        .btn-hover-fill:hover::before {
+            width: 100%;
+        }
+    </style>
+
+    <!-- Google Tag Manager -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-1HYD0CEKFX"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -13,386 +103,333 @@
       gtag('js', new Date());
       gtag('config', 'G-1HYD0CEKFX');
     </script>
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    <style>
-        /* --- Variables & Reset --- */
-        :root {
-            --bg-core: #050505;
-            --bg-card: #0f0f0f;
-            --gold-accent: #D4AF37;
-            --wine-accent: #722F37; /* Merlot */
-            --text-primary: #F0F0F0;
-            --text-secondary: #888888;
-            --border-subtle: rgba(212, 175, 55, 0.15);
-            --font-serif: 'Playfair Display', serif;
-            --font-sans: 'Manrope', sans-serif;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body {
-            background-color: var(--bg-core);
-            color: var(--text-primary);
-            font-family: var(--font-sans);
-            line-height: 1.8;
-            overflow-x: hidden;
-        }
-
-        /* Grain Overlay */
-        .grain-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
-            pointer-events: none; z-index: 9999;
-        }
-
-        a { text-decoration: none; color: inherit; transition: 0.4s ease; }
-        ul { list-style: none; }
-
-        /* --- Typography --- */
-        h1, h2, h3, h4 { font-family: var(--font-serif); color: var(--text-primary); font-weight: 400; }
-        h1 { font-size: clamp(3.5rem, 6vw, 5.5rem); line-height: 1.1; letter-spacing: -0.03em; }
-        h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 2rem; position: relative; display: inline-block; }
-        h2::after {
-            content: ''; position: absolute; bottom: 5px; left: 105%; width: 60px; height: 1px;
-            background-color: var(--gold-accent);
-        }
-        p { color: var(--text-secondary); margin-bottom: 1.5rem; font-weight: 300; font-size: 1.05rem; }
-
-        /* --- Utilities --- */
-        .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
-        .section-padding { padding: 120px 0; }
-        
-        .btn {
-            display: inline-block; padding: 16px 36px;
-            border: 1px solid var(--gold-accent); color: var(--gold-accent);
-            font-family: var(--font-sans); text-transform: uppercase; letter-spacing: 2px; font-size: 0.75rem; font-weight: 600;
-            background: transparent; position: relative; overflow: hidden; transition: color 0.4s;
-        }
-        .btn::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 0; height: 100%;
-            background-color: var(--gold-accent); transition: width 0.4s ease; z-index: -1;
-        }
-        .btn:hover { color: var(--bg-core); }
-        .btn:hover::before { width: 100%; }
-
-        .btn-fill { background-color: var(--gold-accent); color: var(--bg-core); }
-        .btn-fill:hover { background-color: white; color: black; border-color: white; }
-
-        /* --- Animations --- */
-        .fade-up { opacity: 0; transform: translateY(40px); transition: opacity 1s ease, transform 1s ease; }
-        .fade-up.visible { opacity: 1; transform: translateY(0); }
-
-        /* --- Navigation --- */
-        nav {
-            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 30px 0;
-            background: rgba(5, 5, 5, 0.9); backdrop-filter: blur(5px);
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-        }
-        nav .container { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-family: var(--font-serif); font-size: 1.5rem; letter-spacing: -0.5px; border: 1px solid var(--gold-accent); padding: 5px 15px; }
-        .nav-links { display: flex; gap: 40px; }
-        .nav-links a { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-secondary); }
-        .nav-links a:hover { color: var(--gold-accent); }
-
-        /* --- Hero Section --- */
-        .hero { min-height: 100vh; display: flex; align-items: center; position: relative; padding-top: 80px; }
-        .hero-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 60px; align-items: center; }
-        .hero-label { display: block; color: var(--gold-accent); text-transform: uppercase; letter-spacing: 4px; font-size: 0.8rem; margin-bottom: 20px; border-left: 2px solid var(--gold-accent); padding-left: 15px; }
-        .hero-visual { position: relative; z-index: 1; }
-        .hero-visual::before { content: ''; position: absolute; top: 20px; left: 20px; width: 100%; height: 100%; border: 1px solid var(--gold-accent); z-index: -1; transition: transform 0.5s ease; }
-        .hero-visual:hover::before { transform: translate(10px, 10px); }
-        .profile-img { width: 100%; height: auto; display: block; filter: grayscale(100%) contrast(115%); transition: all 0.6s ease; opacity: 0.9; }
-        .profile-img:hover { filter: grayscale(0%) contrast(100%); opacity: 1; }
-
-        /* --- Stats Strip --- */
-        .stats-strip { border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); padding: 40px 0; display: flex; justify-content: space-around; margin: 50px 0 100px 0; }
-        .stat-item { text-align: center; }
-        .stat-num { font-family: var(--font-serif); font-size: 3rem; color: var(--gold-accent); line-height: 1; }
-        .stat-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-top: 10px; }
-
-        /* --- Projects --- */
-        .project-item { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 50px; margin-bottom: 100px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 60px; }
-        .project-item:last-child { border: none; }
-        .project-content { order: 2; }
-        .project-visual { order: 1; height: 300px; background: #111; border: 1px solid var(--border-subtle); position: relative; overflow: hidden; transition: 0.5s; cursor: pointer; }
-        .project-visual:hover { border-color: var(--gold-accent); }
-        
-        .visual-art { width: 100%; height: 100%; opacity: 0.2; transition: transform 0.5s ease; }
-        .project-visual:hover .visual-art { transform: scale(1.05); opacity: 0.3; }
-        
-        /* Patterns */
-        .visual-wine { background: radial-gradient(circle, #722F37 10%, transparent 10%), radial-gradient(circle, #722F37 10%, transparent 10%); background-size: 20px 20px; background-position: 0 0, 10px 10px; opacity: 0.4; }
-        .visual-superhero { background-image: radial-gradient(#E63946 1px, transparent 1px), radial-gradient(#E63946 1px, transparent 1px); background-size: 20px 20px; background-position: 0 0, 10px 10px; opacity: 0.3; }
-        
-        .project-num { font-family: var(--font-serif); font-size: 4rem; color: rgba(255,255,255,0.05); line-height: 1; margin-bottom: -20px; display: block; }
-        .project-tags { margin-top: 20px; display: flex; gap: 15px; }
-        .tag { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; border: 1px solid #333; padding: 5px 15px; color: var(--text-secondary); }
-        .tag-highlight { border-color: var(--gold-accent); color: var(--gold-accent); }
-
-        /* --- Experience Timeline --- */
-        .timeline-clean { position: relative; padding-left: 30px; }
-        .timeline-clean::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 1px; background: linear-gradient(to bottom, var(--gold-accent), transparent); }
-        .exp-item { margin-bottom: 60px; position: relative; }
-        .exp-item::after { content: ''; position: absolute; left: -34px; top: 5px; width: 9px; height: 9px; background-color: var(--bg-core); border: 1px solid var(--gold-accent); transform: rotate(45deg); }
-        .exp-date { font-family: var(--font-serif); color: var(--gold-accent); font-size: 1.1rem; font-style: italic; }
-        .exp-role { font-size: 1.3rem; font-weight: 500; margin: 5px 0; }
-        .exp-company { text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; color: var(--text-secondary); }
-        
-        /* --- Capabilities --- */
-        .skills-section { background-color: var(--bg-card); padding: 100px 0; }
-        .skill-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; }
-        .skill-col h4 { color: var(--gold-accent); font-size: 1.2rem; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 10px; }
-        .skill-col ul li { color: var(--text-secondary); margin-bottom: 10px; font-size: 0.95rem; padding-left: 10px; border-left: 2px solid transparent; transition: 0.3s; }
-        .skill-col ul li:hover { border-left-color: var(--gold-accent); color: white; padding-left: 20px; }
-
-        /* --- Contact --- */
-        .contact-minimal { text-align: center; margin-top: 50px; }
-        .email-large { font-family: var(--font-serif); font-size: clamp(1.5rem, 4vw, 3rem); color: var(--text-primary); border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .email-large:hover { color: var(--gold-accent); border-bottom-color: var(--gold-accent); }
-
-        /* --- Mobile --- */
-        @media (max-width: 900px) {
-            .hero-grid { grid-template-columns: 1fr; gap: 40px; text-align: center; }
-            .hero-visual { width: 80%; margin: 0 auto; }
-            .hero-label { display: inline-block; border-left: none; border-bottom: 2px solid var(--gold-accent); padding-left: 0; padding-bottom: 5px; }
-            .project-item { grid-template-columns: 1fr; gap: 30px; }
-            .project-visual { order: 2; height: 200px; }
-            .project-content { order: 1; }
-            .skill-list { grid-template-columns: 1fr 1fr; }
-            .nav-links { display: none; }
-            .stats-strip { flex-direction: column; gap: 30px; }
-        }
-    </style>
 </head>
-<body>
+<body class="bg-core text-primary font-sans leading-relaxed overflow-x-hidden antialiased">
 
-    <div class="grain-overlay"></div>
+    <!-- Grain Overlay -->
+    <div class="fixed inset-0 w-full h-full bg-grain pointer-events-none z-50 opacity-30"></div>
 
-    <nav>
-        <div class="container">
-            <div class="logo">MP</div>
-            <div class="nav-links">
-                <a href="#projects">Selected Works</a>
-                <a href="#experience">Career</a>
-                <a href="#capabilities">Expertise</a>
-                <a href="#contact">Contact</a>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-40 py-8 bg-[#050505]/90 backdrop-blur-sm border-b border-white/5">
+        <div class="max-w-[1100px] mx-auto px-8 flex justify-between items-center">
+            <div class="font-serif text-2xl tracking-tighter border border-gold px-4 py-1">MP</div>
+            <div class="hidden md:flex gap-10">
+                <a href="#projects" class="text-sm uppercase tracking-[1.5px] text-secondary hover:text-gold transition-colors duration-300">Selected Works</a>
+                <a href="#experience" class="text-sm uppercase tracking-[1.5px] text-secondary hover:text-gold transition-colors duration-300">Career</a>
+                <a href="#capabilities" class="text-sm uppercase tracking-[1.5px] text-secondary hover:text-gold transition-colors duration-300">Expertise</a>
+                <a href="#contact" class="text-sm uppercase tracking-[1.5px] text-secondary hover:text-gold transition-colors duration-300">Contact</a>
             </div>
         </div>
     </nav>
 
-    <header class="hero">
-        <div class="container">
-            <div class="hero-grid">
+    <!-- Hero Section -->
+    <header class="min-h-screen flex items-center relative pt-20">
+        <div class="max-w-[1100px] mx-auto px-8 w-full relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-[1.2fr_0.8fr] gap-16 items-center text-center md:text-left">
                 <div class="hero-content fade-up">
-                    <span class="hero-label">Data Scientist & Analyst</span>
-                    <h1>Precision in Data.<br>Clarity in <span class="text-gold">Strategy.</span></h1>
-                    <p style="max-width: 550px; margin-top: 30px;">
+                    <span class="block text-gold uppercase tracking-[4px] text-xs mb-5 md:border-l-2 md:border-gold md:pl-4 border-b-2 md:border-b-0 border-gold pb-2 md:pb-0 inline-block md:inline">Data Scientist & Analyst</span>
+                    <h1 class="font-serif text-[clamp(3.5rem,6vw,5.5rem)] leading-[1.1] tracking-[-0.03em] font-normal">
+                        Precision in Data.<br>Clarity in <span class="text-gold">Strategy.</span>
+                    </h1>
+                    <p class="text-secondary text-lg font-light mt-8 mb-10 max-w-[550px] mx-auto md:mx-0">
                         I craft sophisticated data narratives and machine learning architectures. My work bridges the gap between raw complexity and executive decision-making.
                     </p>
-                    <div style="margin-top: 50px;">
-                        <a href="#projects" class="btn btn-fill">View Dossier</a>
-                        <a href="#contact" class="btn" style="margin-left: 20px">Inquire</a>
+                    <div class="flex flex-col sm:flex-row gap-5 justify-center md:justify-start">
+                        <a href="#projects" class="inline-block px-9 py-4 border border-gold bg-gold text-core font-bold text-xs uppercase tracking-[2px] hover:bg-white hover:text-black hover:border-white transition-all duration-300">View Dossier</a>
+                        <a href="#contact" class="inline-block px-9 py-4 border border-gold text-gold font-bold text-xs uppercase tracking-[2px] bg-transparent relative overflow-hidden btn-hover-fill hover:text-core transition-colors duration-300">Inquire</a>
                     </div>
                 </div>
-                <div class="hero-visual fade-up">
-                    <img src="images/Mehul.jpg" alt="Mehul Parashar" class="profile-img">
+                <div class="hero-visual fade-up relative w-4/5 mx-auto md:w-full">
+                    <div class="relative z-10 group">
+                        <!-- Offset Border Effect -->
+                        <div class="absolute top-5 left-5 w-full h-full border border-gold -z-10 transition-transform duration-500 group-hover:translate-x-2 group-hover:translate-y-2"></div>
+                        <img src="images/Mehul.jpg" alt="Mehul Parashar" class="w-full h-auto block grayscale contrast-[1.15] opacity-90 transition-all duration-700 group-hover:grayscale-0 group-hover:contrast-100 group-hover:opacity-100">
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <section class="container fade-up">
-        <div class="stats-strip">
-            <div class="stat-item">
-                <div class="stat-num">15+</div>
-                <div class="stat-label">Large-Scale Datasets</div>
+    <!-- Stats Strip -->
+    <section class="max-w-[1100px] mx-auto px-8 fade-up">
+        <div class="border-t border-b border-subtle py-10 my-12 md:my-24 flex flex-col md:flex-row justify-around gap-8 md:gap-0">
+            <div class="text-center">
+                <div class="font-serif text-5xl text-gold leading-none">15+</div>
+                <div class="text-xs uppercase tracking-widest text-secondary mt-3">Large-Scale Datasets</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-num">95%</div>
-                <div class="stat-label">Algorithm Accuracy</div>
+            <div class="text-center">
+                <div class="font-serif text-5xl text-gold leading-none">95%</div>
+                <div class="text-xs uppercase tracking-widest text-secondary mt-3">Algorithm Accuracy</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-num">4yrs</div>
-                <div class="stat-label">Industry Experience</div>
+            <div class="text-center">
+                <div class="font-serif text-5xl text-gold leading-none">4yrs</div>
+                <div class="text-xs uppercase tracking-widest text-secondary mt-3">Industry Experience</div>
             </div>
         </div>
     </section>
 
-    <section id="projects" class="section-padding container">
-        <h2 class="fade-up">Selected Works</h2>
+    <!-- Projects Section -->
+    <section id="projects" class="py-32 max-w-[1100px] mx-auto px-8">
+        <h2 class="fade-up font-serif text-[clamp(2rem,4vw,3rem)] mb-8 relative inline-block h2-line">Selected Works</h2>
 
-        <!-- NEW PROJECT: WINE ANALYSIS -->
-        <div class="project-item fade-up">
-            <a href="wine-viz.html" class="project-visual" title="View VinoMetric AI">
-                <div class="visual-art visual-wine"></div>
+        <!-- Project 1: Wine -->
+        <div class="project-item fade-up grid grid-cols-1 md:grid-cols-[0.8fr_1.2fr] gap-8 md:gap-12 mb-24 items-center border-b border-white/5 pb-16 last:border-0">
+            <a href="wine-viz.html" class="order-2 md:order-1 h-[200px] md:h-[300px] bg-[#111] border border-subtle relative overflow-hidden group block transition-colors duration-500 hover:border-gold" title="View VinoMetric AI">
+                <div class="absolute inset-0 bg-visual-wine bg-pattern bg-repeat opacity-40 transition-transform duration-500 group-hover:scale-105 group-hover:opacity-30"></div>
             </a>
-            <div class="project-content">
-                <span class="project-num" style="color: #722F37; opacity: 0.6;">NEW</span>
-                <h3><a href="wine-viz.html">VinoMetric: The AI Sommelier</a></h3>
-                <p>A machine-learning driven analysis of wine chemistry. Using chemical signatures (Flavanoids, Alcohol, Hue) to cluster cultivars and predict wine quality with a custom predictive engine.</p>
-                <div class="project-tags">
-                    <span class="tag tag-highlight">Machine Learning</span>
-                    <span class="tag">Chemical Clustering</span>
-                    <span class="tag">Predictive UI</span>
+            <div class="project-content order-1 md:order-2">
+                <h3 class="relative z-10 text-2xl mb-4"><a href="wine-viz.html" class="hover:text-gold transition-colors">VinoMetric: The AI Sommelier</a></h3>
+                <p class="text-secondary font-light text-lg mb-6">A machine-learning driven analysis of wine chemistry. Using chemical signatures (Flavanoids, Alcohol, Hue) to cluster cultivars and predict wine quality with a custom predictive engine.</p>
+                <div class="flex flex-wrap gap-4">
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-gold text-gold px-4 py-1">Machine Learning</span>
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">Chemical Clustering</span>
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">Predictive UI</span>
                 </div>
-                <div style="margin-top: 20px;">
-                     <a href="wine-viz.html" class="btn" style="font-size: 0.7rem; padding: 10px 20px;">Launch Analysis</a>
+                <div class="mt-6">
+                     <a href="wine-viz.html" class="inline-block px-6 py-3 border border-gold text-gold text-[0.7rem] font-bold uppercase tracking-[2px] bg-transparent relative overflow-hidden btn-hover-fill hover:text-core transition-colors duration-300">Launch Analysis</a>
                 </div>
             </div>
         </div>
 
-        <!-- PROJECT: SUPERHERO CENSUS -->
-        <div class="project-item fade-up">
-            <a href="superhero-viz.html" class="project-visual" title="View Superhuman Census">
-                <div class="visual-art visual-superhero"></div>
+        <!-- Project 2: Superhero -->
+        <div class="project-item fade-up grid grid-cols-1 md:grid-cols-[0.8fr_1.2fr] gap-8 md:gap-12 mb-24 items-center border-b border-white/5 pb-16 last:border-0">
+            <a href="superhero-viz.html" class="order-2 md:order-1 h-[200px] md:h-[300px] bg-[#111] border border-subtle relative overflow-hidden group block transition-colors duration-500 hover:border-gold" title="View Superhuman Census">
+                <div class="absolute inset-0 bg-visual-hero bg-pattern bg-repeat opacity-30 transition-transform duration-500 group-hover:scale-105 group-hover:opacity-30"></div>
             </a>
-            <div class="project-content">
-                <span class="project-num">01</span>
-                <h3><a href="superhero-viz.html">The Superhuman Census</a></h3>
-                <p>A socio-political analysis of metahuman activity. Investigating the correlation between power levels, training regimens, and civilian casualties to create a predictive risk model for public safety.</p>
-                <div class="project-tags">
-                    <span class="tag">Risk Analysis</span>
-                    <span class="tag">D3.js</span>
-                    <span class="tag">Public Policy</span>
+            <div class="project-content order-1 md:order-2">
+                <h3 class="relative z-10 text-2xl mb-4"><a href="superhero-viz.html" class="hover:text-gold transition-colors">The Superhuman Census</a></h3>
+                <p class="text-secondary font-light text-lg mb-6">A socio-political analysis of metahuman activity. Investigating the correlation between power levels, training regimens, and civilian casualties to create a predictive risk model for public safety.</p>
+                <div class="flex flex-wrap gap-4">
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">Risk Analysis</span>
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">D3.js</span>
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">Public Policy</span>
+                </div>
+                <div class="mt-6">
+                     <a href="superhero-viz.html" class="inline-block px-6 py-3 border border-gold text-gold text-[0.7rem] font-bold uppercase tracking-[2px] bg-transparent relative overflow-hidden btn-hover-fill hover:text-core transition-colors duration-300">Open Database</a>
                 </div>
             </div>
         </div>
         
-        <!-- Project 2 -->
-        <div class="project-item fade-up">
-            <div class="project-visual">
-                <div class="visual-art"></div>
-            </div>
-            <div class="project-content">
-                <span class="project-num">02</span>
-                <h3>GoCary Route Optimization</h3>
-                <p>Advanced logistical analysis for Cary & GoTriangle bus systems. Leveraged geospatial data to reduce latency and improve operational on-time metrics.</p>
-                <div class="project-tags">
-                    <span class="tag">Python</span>
-                    <span class="tag">Geospatial</span>
-                    <span class="tag">Logistics</span>
+        <!-- Project 3: Spotify -->
+        <div class="project-item fade-up grid grid-cols-1 md:grid-cols-[0.8fr_1.2fr] gap-8 md:gap-12 mb-24 items-center border-b border-white/5 pb-16 last:border-0">
+            <a href="spotify-viz.html" class="order-2 md:order-1 h-[200px] md:h-[300px] bg-[#111] border border-subtle relative overflow-hidden group block transition-colors duration-500 hover:border-gold" title="View Pulse of Music">
+                <div class="absolute inset-0 bg-visual-spotify bg-pattern bg-repeat opacity-30 transition-transform duration-500 group-hover:scale-105 group-hover:opacity-30"></div>
+            </a>
+            <div class="project-content order-1 md:order-2">
+                <h3 class="relative z-10 text-2xl mb-4"><a href="spotify-viz.html" class="hover:text-gold transition-colors">The Pulse of Music</a></h3>
+                <p class="text-secondary font-light text-lg mb-6">A data-driven investigation into the sonic architecture of modern hits. Analyzing 2,000+ tracks to decode the impact of censorship, the attention economy, and genre evolution.</p>
+                <div class="flex flex-wrap gap-4">
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">API Integration</span>
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">D3.js</span>
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">Trend Analysis</span>
+                </div>
+                <div class="mt-6">
+                     <a href="spotify-viz.html" class="inline-block px-6 py-3 border border-gold text-gold text-[0.7rem] font-bold uppercase tracking-[2px] bg-transparent relative overflow-hidden btn-hover-fill hover:text-core transition-colors duration-300">View Dashboard</a>
                 </div>
             </div>
         </div>
 
+        <!-- Project 4: GoCary Bus Route Optimization -->
+        <div class="project-item fade-up grid grid-cols-1 md:grid-cols-[0.8fr_1.2fr] gap-8 md:gap-12 mb-24 items-center border-b border-white/5 pb-16 last:border-0">
+            <a href="https://github.com/MeheheP/GoCary_Bus_route_optimizatio" target="_blank" class="order-2 md:order-1 h-[200px] md:h-[300px] bg-[#111] border border-subtle relative overflow-hidden group block transition-colors duration-500 hover:border-gold" title="View GitHub Repo">
+                <div class="absolute inset-0 bg-visual-geo bg-pattern bg-repeat opacity-30 transition-transform duration-500 group-hover:scale-105 group-hover:opacity-30"></div>
+            </a>
+            <div class="project-content order-1 md:order-2">
+                <h3 class="relative z-10 text-2xl mb-4"><a href="https://github.com/MeheheP/GoCary_Bus_route_optimizatio" target="_blank" class="hover:text-gold transition-colors">GoCary Bus Route Optimization</a></h3>
+                <p class="text-secondary font-light text-lg mb-6">Optimizing public transit efficiency through geospatial analysis and route algorithms. Improved operational on-time metrics and reduced latency for the GoCary bus system.</p>
+                <div class="flex flex-wrap gap-4">
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">Python</span>
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">Geospatial</span>
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">Logistics</span>
+                </div>
+                <div class="mt-6">
+                     <a href="https://github.com/MeheheP/GoCary_Bus_route_optimizatio" target="_blank" class="inline-block px-6 py-3 border border-gold text-gold text-[0.7rem] font-bold uppercase tracking-[2px] bg-transparent relative overflow-hidden btn-hover-fill hover:text-core transition-colors duration-300">View Code</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 5: Cary Bike Analysis -->
+        <div class="project-item fade-up grid grid-cols-1 md:grid-cols-[0.8fr_1.2fr] gap-8 md:gap-12 mb-24 items-center border-b border-white/5 pb-16 last:border-0">
+            <a href="https://github.com/MeheheP/Cary_Bike" target="_blank" class="order-2 md:order-1 h-[200px] md:h-[300px] bg-[#111] border border-subtle relative overflow-hidden group block transition-colors duration-500 hover:border-gold" title="View GitHub Repo">
+                <div class="absolute inset-0 bg-visual-geo bg-pattern bg-repeat opacity-30 transition-transform duration-500 group-hover:scale-105 group-hover:opacity-30"></div>
+            </a>
+            <div class="project-content order-1 md:order-2">
+                <h3 class="relative z-10 text-2xl mb-4"><a href="https://github.com/MeheheP/Cary_Bike" target="_blank" class="hover:text-gold transition-colors">Cary Bike Sharing Analysis</a></h3>
+                <p class="text-secondary font-light text-lg mb-6">Exploratory data analysis of municipal bike-sharing trends. Investigating usage patterns to inform urban planning and optimize resource allocation for city transport.</p>
+                <div class="flex flex-wrap gap-4">
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">Data Analysis</span>
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">Visualization</span>
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">Urban Planning</span>
+                </div>
+                <div class="mt-6">
+                     <a href="https://github.com/MeheheP/Cary_Bike" target="_blank" class="inline-block px-6 py-3 border border-gold text-gold text-[0.7rem] font-bold uppercase tracking-[2px] bg-transparent relative overflow-hidden btn-hover-fill hover:text-core transition-colors duration-300">View Code</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 6: RL Engine -->
+        <div class="project-item fade-up grid grid-cols-1 md:grid-cols-[0.8fr_1.2fr] gap-8 md:gap-12 mb-24 items-center border-b border-white/5 pb-16 last:border-0">
+            <a href="https://github.com/MeheheP/MereExposureEffect_RL_Engine" target="_blank" class="order-2 md:order-1 h-[200px] md:h-[300px] bg-[#111] border border-subtle relative overflow-hidden group block transition-colors duration-500 hover:border-gold" title="View GitHub Repo">
+                <div class="absolute inset-0 bg-visual-neural bg-pattern bg-repeat opacity-30 transition-transform duration-500 group-hover:scale-105 group-hover:opacity-30"></div>
+            </a>
+            <div class="project-content order-1 md:order-2">
+                <h3 class="relative z-10 text-2xl mb-4"><a href="https://github.com/MeheheP/MereExposureEffect_RL_Engine" target="_blank" class="hover:text-gold transition-colors">Mere Exposure RL Engine</a></h3>
+                <p class="text-secondary font-light text-lg mb-6">A specialized Reinforcement Learning engine simulating the psychological 'Mere Exposure Effect'. Uses custom reward functions to model preference formation over time.</p>
+                <div class="flex flex-wrap gap-4">
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">Reinforcement Learning</span>
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">AI</span>
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">Simulation</span>
+                </div>
+                <div class="mt-6">
+                     <a href="https://github.com/MeheheP/MereExposureEffect_RL_Engine" target="_blank" class="inline-block px-6 py-3 border border-gold text-gold text-[0.7rem] font-bold uppercase tracking-[2px] bg-transparent relative overflow-hidden btn-hover-fill hover:text-core transition-colors duration-300">View Code</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 7: LTV Fraud Detection -->
+        <div class="project-item fade-up grid grid-cols-1 md:grid-cols-[0.8fr_1.2fr] gap-8 md:gap-12 mb-24 items-center border-b border-white/5 pb-16 last:border-0">
+            <a href="https://github.com/MeheheP/Customer-Lifetime-Value-LTV-Fraud-Detection-Analysis" target="_blank" class="order-2 md:order-1 h-[200px] md:h-[300px] bg-[#111] border border-subtle relative overflow-hidden group block transition-colors duration-500 hover:border-gold" title="View GitHub Repo">
+                <div class="absolute inset-0 bg-visual-finance bg-pattern bg-repeat opacity-30 transition-transform duration-500 group-hover:scale-105 group-hover:opacity-30"></div>
+            </a>
+            <div class="project-content order-1 md:order-2">
+                <h3 class="relative z-10 text-2xl mb-4"><a href="https://github.com/MeheheP/Customer-Lifetime-Value-LTV-Fraud-Detection-Analysis" target="_blank" class="hover:text-gold transition-colors">LTV & Fraud Detection</a></h3>
+                <p class="text-secondary font-light text-lg mb-6">Financial modeling to estimate Customer Lifetime Value (LTV) while simultaneously detecting anomalies indicative of fraudulent activity using machine learning.</p>
+                <div class="flex flex-wrap gap-4">
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">Fraud Detection</span>
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">Financial Modeling</span>
+                    <span class="text-[0.7rem] uppercase tracking-widest border border-[#333] text-secondary px-4 py-1">Python</span>
+                </div>
+                <div class="mt-6">
+                     <a href="https://github.com/MeheheP/Customer-Lifetime-Value-LTV-Fraud-Detection-Analysis" target="_blank" class="inline-block px-6 py-3 border border-gold text-gold text-[0.7rem] font-bold uppercase tracking-[2px] bg-transparent relative overflow-hidden btn-hover-fill hover:text-core transition-colors duration-300">View Code</a>
+                </div>
+            </div>
+        </div>
     </section>
 
-    <section id="capabilities" class="skills-section">
-        <div class="container fade-up">
-            <h2>Technical Expertise</h2>
-            <div class="skill-list" style="margin-top: 50px;">
-                <div class="skill-col">
-                    <h4>Analysis</h4>
+    <!-- Capabilities Section -->
+    <section id="capabilities" class="bg-card py-24">
+        <div class="max-w-[1100px] mx-auto px-8 fade-up">
+            <h2 class="font-serif text-[clamp(2rem,4vw,3rem)] mb-12 relative inline-block h2-line">Technical Expertise</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 mt-12">
+                <!-- Skill Col 1 -->
+                <div>
+                    <h4 class="text-gold text-xl mb-5 border-b border-[#222] pb-2 font-serif">Analysis</h4>
                     <ul>
-                        <li>Python (Pandas/NumPy)</li>
-                        <li>R Statistical Computing</li>
-                        <li>SQL Architecture</li>
-                        <li>ETL Pipeline Design</li>
+                        <li class="text-secondary mb-2 text-[0.95rem] pl-2 border-l-2 border-transparent hover:border-gold hover:text-white hover:pl-5 transition-all duration-300 cursor-default">Python (Pandas/NumPy)</li>
+                        <li class="text-secondary mb-2 text-[0.95rem] pl-2 border-l-2 border-transparent hover:border-gold hover:text-white hover:pl-5 transition-all duration-300 cursor-default">R Statistical Computing</li>
+                        <li class="text-secondary mb-2 text-[0.95rem] pl-2 border-l-2 border-transparent hover:border-gold hover:text-white hover:pl-5 transition-all duration-300 cursor-default">SQL Architecture</li>
+                        <li class="text-secondary mb-2 text-[0.95rem] pl-2 border-l-2 border-transparent hover:border-gold hover:text-white hover:pl-5 transition-all duration-300 cursor-default">ETL Pipeline Design</li>
                     </ul>
                 </div>
-                <div class="skill-col">
-                    <h4>Machine Learning</h4>
+                <!-- Skill Col 2 -->
+                <div>
+                    <h4 class="text-gold text-xl mb-5 border-b border-[#222] pb-2 font-serif">Machine Learning</h4>
                     <ul>
-                        <li>Predictive Modeling</li>
-                        <li>TensorFlow & Keras</li>
-                        <li>XGBoost Algorithms</li>
-                        <li>NLP Processing</li>
+                        <li class="text-secondary mb-2 text-[0.95rem] pl-2 border-l-2 border-transparent hover:border-gold hover:text-white hover:pl-5 transition-all duration-300 cursor-default">Predictive Modeling</li>
+                        <li class="text-secondary mb-2 text-[0.95rem] pl-2 border-l-2 border-transparent hover:border-gold hover:text-white hover:pl-5 transition-all duration-300 cursor-default">TensorFlow & Keras</li>
+                        <li class="text-secondary mb-2 text-[0.95rem] pl-2 border-l-2 border-transparent hover:border-gold hover:text-white hover:pl-5 transition-all duration-300 cursor-default">XGBoost Algorithms</li>
+                        <li class="text-secondary mb-2 text-[0.95rem] pl-2 border-l-2 border-transparent hover:border-gold hover:text-white hover:pl-5 transition-all duration-300 cursor-default">NLP Processing</li>
                     </ul>
                 </div>
-                <div class="skill-col">
-                    <h4>Visualization</h4>
+                <!-- Skill Col 3 -->
+                <div>
+                    <h4 class="text-gold text-xl mb-5 border-b border-[#222] pb-2 font-serif">Visualization</h4>
                     <ul>
-                        <li>Tableau Dashboards</li>
-                        <li>Power BI Reporting</li>
-                        <li>Seaborn / Matplotlib</li>
-                        <li>D3.js & Interactive JS</li>
+                        <li class="text-secondary mb-2 text-[0.95rem] pl-2 border-l-2 border-transparent hover:border-gold hover:text-white hover:pl-5 transition-all duration-300 cursor-default">Tableau Dashboards</li>
+                        <li class="text-secondary mb-2 text-[0.95rem] pl-2 border-l-2 border-transparent hover:border-gold hover:text-white hover:pl-5 transition-all duration-300 cursor-default">Power BI Reporting</li>
+                        <li class="text-secondary mb-2 text-[0.95rem] pl-2 border-l-2 border-transparent hover:border-gold hover:text-white hover:pl-5 transition-all duration-300 cursor-default">Seaborn / Matplotlib</li>
+                        <li class="text-secondary mb-2 text-[0.95rem] pl-2 border-l-2 border-transparent hover:border-gold hover:text-white hover:pl-5 transition-all duration-300 cursor-default">D3.js & Interactive JS</li>
                     </ul>
                 </div>
-                <div class="skill-col">
-                    <h4>Infrastructure</h4>
+                <!-- Skill Col 4 -->
+                <div>
+                    <h4 class="text-gold text-xl mb-5 border-b border-[#222] pb-2 font-serif">Infrastructure</h4>
                     <ul>
-                        <li>AWS Cloud Services</li>
-                        <li>Docker Containerization</li>
-                        <li>Git Version Control</li>
-                        <li>Linux Environments</li>
+                        <li class="text-secondary mb-2 text-[0.95rem] pl-2 border-l-2 border-transparent hover:border-gold hover:text-white hover:pl-5 transition-all duration-300 cursor-default">AWS Cloud Services</li>
+                        <li class="text-secondary mb-2 text-[0.95rem] pl-2 border-l-2 border-transparent hover:border-gold hover:text-white hover:pl-5 transition-all duration-300 cursor-default">Docker Containerization</li>
+                        <li class="text-secondary mb-2 text-[0.95rem] pl-2 border-l-2 border-transparent hover:border-gold hover:text-white hover:pl-5 transition-all duration-300 cursor-default">Git Version Control</li>
+                        <li class="text-secondary mb-2 text-[0.95rem] pl-2 border-l-2 border-transparent hover:border-gold hover:text-white hover:pl-5 transition-all duration-300 cursor-default">Linux Environments</li>
                     </ul>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="experience" class="section-padding container">
-        <h2 class="fade-up">Career Trajectory</h2>
-        <div class="timeline-clean fade-up" style="margin-top: 60px; max-width: 800px;">
+    <!-- Experience Section -->
+    <section id="experience" class="py-32 max-w-[1100px] mx-auto px-8">
+        <h2 class="fade-up font-serif text-[clamp(2rem,4vw,3rem)] mb-8 relative inline-block h2-line">Career Trajectory</h2>
+        
+        <div class="relative pl-8 border-l border-gradient-to-b from-gold to-transparent mt-16 max-w-[800px] fade-up">
+            <div class="absolute left-0 top-0 w-[1px] h-full bg-gradient-to-b from-gold to-transparent"></div>
             
-            <div class="exp-item">
-                <div class="exp-date">2023 — 2024</div>
-                <div class="exp-role">Lead Data Science Intern</div>
-                <div class="exp-company">Spotlist Inc. (New Jersey)</div>
-                <p style="margin-top: 15px;">
+            <!-- Job 1 -->
+            <div class="mb-16 relative group">
+                <div class="absolute -left-[39px] top-[5px] w-[9px] h-[9px] bg-core border border-gold rotate-45 group-hover:bg-gold transition-colors duration-300"></div>
+                <div class="font-serif text-gold text-lg italic mb-1">2023 — 2024</div>
+                <div class="text-[1.3rem] font-medium mb-1">Lead Data Science Intern</div>
+                <div class="uppercase tracking-[2px] text-xs text-secondary mb-4">Spotlist Inc. (New Jersey)</div>
+                <p class="text-secondary font-light leading-relaxed">
                     Spearheaded the automation of data pipelines using Transformers, achieving a 30% reduction in processing time. Engineered real-time streaming architectures via AWS Lambda and Kinesis.
                 </p>
             </div>
 
-            <div class="exp-item">
-                <div class="exp-date">2019 — 2021</div>
-                <div class="exp-role">Data Operations Analyst</div>
-                <div class="exp-company">Dhakad Events (Mumbai)</div>
-                <p style="margin-top: 15px;">
+            <!-- Job 2 -->
+            <div class="mb-16 relative group">
+                <div class="absolute -left-[39px] top-[5px] w-[9px] h-[9px] bg-core border border-gold rotate-45 group-hover:bg-gold transition-colors duration-300"></div>
+                <div class="font-serif text-gold text-lg italic mb-1">2019 — 2021</div>
+                <div class="text-[1.3rem] font-medium mb-1">Data Operations Analyst</div>
+                <div class="uppercase tracking-[2px] text-xs text-secondary mb-4">Dhakad Events (Mumbai)</div>
+                <p class="text-secondary font-light leading-relaxed">
                     Standardized revenue tracking protocols for high-profile entertainment metrics. Designed SQL reporting infrastructure that recovered 35+ man-hours monthly.
                 </p>
             </div>
-
         </div>
     </section>
 
-    <section id="education" class="container section-padding" style="border-top: 1px solid var(--border-subtle);">
-        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 40px;" class="fade-up">
-            <div>
-                <h4 style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px;">Education</h4>
-                <div style="margin-bottom: 30px;">
-                    <h3 style="font-size: 1.5rem;">MBA, Data Driven Decisions</h3>
-                    <p style="margin: 0;">Westcliff University (Current)</p>
+    <!-- Education Section -->
+    <section id="education" class="max-w-[1100px] mx-auto px-8 py-24 border-t border-subtle">
+        <div class="flex flex-col md:flex-row justify-between gap-10 fade-up">
+            <div class="flex-1">
+                <h4 class="text-secondary text-xs uppercase tracking-[2px] mb-8">Education</h4>
+                <div class="mb-8">
+                    <h3 class="font-serif text-2xl mb-1">MBA, Data Driven Decisions</h3>
+                    <p class="text-secondary font-light">Westcliff University (Current)</p>
                 </div>
-                <div style="margin-bottom: 30px;">
-                    <h3 style="font-size: 1.5rem;">MSc, Computer Info Science</h3>
-                    <p style="margin: 0;">Purdue University (2024)</p>
+                <div class="mb-8">
+                    <h3 class="font-serif text-2xl mb-1">MSc, Computer Info Science</h3>
+                    <p class="text-secondary font-light">Purdue University (2024)</p>
                 </div>
                 <div>
-                    <h3 style="font-size: 1.5rem;">BSc, Computer Science</h3>
-                    <p style="margin: 0;">Mumbai University (2020)</p>
+                    <h3 class="font-serif text-2xl mb-1">BSc, Computer Science</h3>
+                    <p class="text-secondary font-light">Mumbai University (2020)</p>
                 </div>
             </div>
             
-            <div>
-                 <h4 style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px;">Credentials</h4>
-                 <ul style="font-family: var(--font-serif); font-size: 1.2rem; font-style: italic; color: var(--text-primary);">
-                     <li style="margin-bottom: 10px;">Google Advanced Analytics</li>
-                     <li style="margin-bottom: 10px;">Google BI Professional</li>
-                     <li style="margin-bottom: 10px;">IBM Data Science</li>
-                     <li style="margin-bottom: 10px;">Azure Data Fundamentals</li>
+            <div class="flex-1 md:pl-20">
+                 <h4 class="text-secondary text-xs uppercase tracking-[2px] mb-8">Credentials</h4>
+                 <ul class="font-serif text-xl italic text-primary space-y-3">
+                     <li>Google Advanced Analytics</li>
+                     <li>Google BI Professional</li>
+                     <li>IBM Data Science</li>
+                     <li>Azure Data Fundamentals</li>
                  </ul>
             </div>
         </div>
     </section>
 
-    <footer id="contact" class="section-padding" style="background-color: #000; text-align: center;">
-        <div class="container fade-up">
-            <span class="hero-label" style="border: none; padding: 0; margin-bottom: 30px; display: inline-block;">Initialize Collaboration</span>
+    <!-- Footer -->
+    <footer id="contact" class="py-32 bg-black text-center">
+        <div class="max-w-[1100px] mx-auto px-8 fade-up">
+            <span class="text-gold uppercase tracking-[4px] text-xs mb-8 inline-block">Initialize Collaboration</span>
             <br>
-            <a href="mailto:parasharmeh@gmail.com" class="email-large">parasharmeh@gmail.com</a>
+            <a href="mailto:parasharmeh@gmail.com" class="font-serif text-[clamp(1.5rem,4vw,3rem)] text-primary border-b border-[#333] pb-2 hover:text-gold hover:border-gold transition-all duration-300">parasharmeh@gmail.com</a>
             
-            <div style="margin-top: 60px; display: flex; justify-content: center; gap: 30px;">
-                <a href="https://www.linkedin.com/in/mehul-parashar/" target="_blank" class="tag" style="border-color: #333;">LinkedIn</a>
-                <a href="https://github.com/MeheheP" target="_blank" class="tag" style="border-color: #333;">GitHub</a>
+            <div class="mt-16 flex justify-center gap-8">
+                <a href="https://www.linkedin.com/in/mehul-parashar/" target="_blank" class="text-[0.7rem] uppercase tracking-widest border border-[#333] px-4 py-1 text-secondary hover:text-gold hover:border-gold transition-colors">LinkedIn</a>
+                <a href="https://github.com/MeheheP" target="_blank" class="text-[0.7rem] uppercase tracking-widest border border-[#333] px-4 py-1 text-secondary hover:text-gold hover:border-gold transition-colors">GitHub</a>
             </div>
             
-            <p style="margin-top: 80px; font-size: 0.7rem; text-transform: uppercase; opacity: 0.5;">
+            <p class="mt-20 text-[0.7rem] uppercase opacity-50 tracking-widest">
                 &copy; 2025 Mehul Parashar. All Rights Reserved.
             </p>
         </div>
