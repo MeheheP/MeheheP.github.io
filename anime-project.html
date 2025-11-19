@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Character Data Story</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- Google Fonts for a clean, data-viz look -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95); z-index: 50;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <!-- Loading Screen -->
+    <div id="loading" class="loading-overlay">
+        <div class="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
+        <h2 class="text-2xl font-bold text-indigo-900">Loading Dataset...</h2>
+        <p class="text-slate-500 mt-2">Parsing ~45MB CSV file (This happens locally in your browser)</p>
+        <p id="loading-status" class="text-sm text-slate-400 mt-4 font-mono">Waiting for data...</p>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+                        MAL Data Story
+                    </span>
+                </div>
+                <div class="flex items-center space-x-8 text-sm font-medium">
+                    <a href="#anatomy" class="text-slate-600 hover:text-indigo-600 transition-colors">Anatomy</a>
+                    <a href="#zodiac" class="text-slate-600 hover:text-indigo-600 transition-colors">Zodiac</a>
+                    <a href="#personas" class="text-slate-600 hover:text-indigo-600 transition-colors">Personas</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="bg-white py-20">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h1 class="text-5xl font-extrabold text-slate-900 tracking-tight mb-6">
+                The Hidden Stats of Anime
+            </h1>
+            <p class="text-xl text-slate-600 leading-relaxed">
+                Analyzing <span id="total-chars" class="font-mono font-bold text-indigo-600">0</span> characters to discover the physical traits, 
+                birthdays, and archetypes that define the medium.
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 space-y-32">
+
+        <!-- SECTION 1: ANATOMY -->
+        <section id="anatomy" class="scroll-mt-24">
+            <div class="border-l-4 border-indigo-500 pl-6 mb-10">
+                <h2 class="text-3xl font-bold text-slate-900">1. The Anatomy of a Character</h2>
+                <p class="text-slate-500 mt-2">Distribution of heights and blood types across the database.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Height Visualization -->
+                <div class="lg:col-span-2 bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+                    <h3 class="text-lg font-semibold mb-6 flex items-center">
+                        <span class="w-8 h-8 bg-blue-100 text-blue-600 rounded flex items-center justify-center mr-3 text-sm">H</span>
+                        Height Distribution
+                    </h3>
+                    
+                    <!-- Dynamic Height Bars -->
+                    <div id="height-container" class="space-y-6">
+                        <!-- JS will inject bars here -->
+                    </div>
+                    <p class="text-xs text-slate-400 mt-6 text-right">*Based on characters with valid height data in cm.</p>
+                </div>
+
+                <!-- Blood Type Stats -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+                    <h3 class="text-lg font-semibold mb-6 flex items-center">
+                        <span class="w-8 h-8 bg-red-100 text-red-600 rounded flex items-center justify-center mr-3 text-sm">B</span>
+                        Blood Types
+                    </h3>
+                    <div id="blood-container" class="grid grid-cols-2 gap-4">
+                        <!-- JS injects blood types -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: ZODIAC -->
+        <section id="zodiac" class="scroll-mt-24">
+            <div class="border-l-4 border-purple-500 pl-6 mb-10 flex justify-between items-end">
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-900">2. The Anime Calendar</h2>
+                    <p class="text-slate-500 mt-2">Which month produces the most characters?</p>
+                </div>
+                <div class="hidden md:block text-right">
+                    <p class="text-sm font-mono text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
+                        Most Popular: <span id="popular-month">...</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Calendar Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="calendar-grid">
+                <!-- Months injected by JS -->
+            </div>
+
+            <!-- Selected Month View -->
+            <div id="month-detail" class="mt-8 bg-slate-900 text-white p-8 rounded-2xl hidden">
+                <h3 id="month-title" class="text-2xl font-bold mb-4 border-b border-slate-700 pb-4">January Birthdays</h3>
+                <div id="month-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Characters injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: PERSONAS -->
+        <section id="personas" class="scroll-mt-24">
+            <div class="border-l-4 border-emerald-500 pl-6 mb-10">
+                <h2 class="text-3xl font-bold text-slate-900">3. The Keyword Persona</h2>
+                <p class="text-slate-500 mt-2">Filter characters by common archetypes found in their bios.</p>
+            </div>
+
+            <!-- Filter Pills -->
+            <div class="flex flex-wrap gap-3 mb-12" id="keyword-filters">
+                <!-- Buttons injected here -->
+            </div>
+
+            <!-- Character Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="persona-grid">
+                <!-- Cards injected here -->
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-12">
+        <div class="max-w-7xl mx-auto px-6 text-center text-slate-500 text-sm">
+            <p>Created for Portfolio Project. Data sourced from MyAnimeList Kaggle Dataset.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- CONFIGURATION ---
+        const DATA_URL = './data/mal_characters_detailed.csv'; // Ensure this path matches your folder structure
+        
+        // --- STATE ---
+        let allCharacters = [];
+        let processedData = {
+            heights: [],
+            bloodTypes: {},
+            birthMonths: {},
+            keywords: {}
+        };
+
+        const KEYWORDS = ["Student", "Demon", "Pirate", "Ninja", "Sword", "Magic", "Captain", "Princess", "Hunter", "Cyborg", "Spirit"];
+
+        // --- UTILITIES ---
+        
+        // Generate a random pastel color for avatars
+        function getColorFromName(name) {
+            const colors = ['bg-red-100 text-red-700', 'bg-orange-100 text-orange-700', 'bg-amber-100 text-amber-700', 'bg-green-100 text-green-700', 'bg-emerald-100 text-emerald-700', 'bg-teal-100 text-teal-700', 'bg-cyan-100 text-cyan-700', 'bg-blue-100 text-blue-700', 'bg-indigo-100 text-indigo-700', 'bg-violet-100 text-violet-700', 'bg-purple-100 text-purple-700', 'bg-fuchsia-100 text-fuchsia-700', 'bg-pink-100 text-pink-700', 'bg-rose-100 text-rose-700'];
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            return colors[Math.abs(hash) % colors.length];
+        }
+
+        // Get initials "NU" from "Naruto Uzumaki"
+        function getInitials(name) {
+            if (!name) return "??";
+            const parts = name.split(/[ ,]+/); // Split by space or comma
+            if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+            // If name is "Uzumaki, Naruto", parts are [Uzumaki, Naruto]
+            // We want first letter of each
+            return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+        }
+
+        // Parse the complex attributes column
+        function getAttribute(jsonString, key) {
+            try {
+                // The CSV parser might leave quotes escaped differently, handling basic JSON parse
+                // Sometimes the string is just empty
+                if (!jsonString || jsonString === '[]') return null;
+                
+                // Replace python-style None if necessary or handle single quotes if the CSV format is weird
+                // But usually PapaParse handles standard CSV JSON well. 
+                // Assuming standard JSON structure: [{"name": "Height", "value": "..."}]
+                const attrs = JSON.parse(jsonString);
+                const found = attrs.find(a => a.name === key);
+                return found ? found.value : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Parse Height "175 cm" -> 175
+        function parseHeight(val) {
+            if (!val) return null;
+            const match = val.match(/(\d+)/);
+            return match ? parseInt(match[0]) : null;
+        }
+
+        // Parse Birthday "October 10" -> "October"
+        function parseMonth(val) {
+            if (!val) return null;
+            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            for (let m of months) {
+                if (val.includes(m)) return m;
+            }
+            return null;
+        }
+
+        // --- MAIN LOGIC ---
+
+        function init() {
+            Papa.parse(DATA_URL, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                step: function(row) {
+                    // Streaming processing if needed, but we'll load all to memory for sorting
+                    // If file is too huge, we might need chunking. 45MB is usually okay for modern browsers.
+                },
+                complete: function(results) {
+                    document.getElementById('loading-status').textContent = "Processing Data...";
+                    processDataset(results.data);
+                },
+                error: function(err) {
+                    document.getElementById('loading').innerHTML = `<div class="text-red-600 font-bold">Error loading CSV: ${err.message}</div><p class="text-sm mt-2">Make sure the file is in the /data folder.</p>`;
+                }
+            });
+        }
+
+        function processDataset(data) {
+            // Filter for "Interesting" characters (has description, has attributes)
+            // This removes "Villager C" entries
+            allCharacters = data.filter(c => 
+                c.name && 
+                c.description && c.description.length > 50 && // Only chars with bios
+                c.attributes && c.attributes.length > 10 // Only chars with stats
+            );
+
+            document.getElementById('total-chars').textContent = allCharacters.length.toLocaleString();
+
+            // 1. Process Heights & Blood Types
+            const heightBuckets = { "Short (<150)": [], "Average (150-170)": [], "Tall (170-185)": [], "Giant (>185)": [] };
+            const bloodCounts = {};
+
+            // 2. Process Calendar
+            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            months.forEach(m => processedData.birthMonths[m] = []);
+
+            // Loop through data
+            allCharacters.forEach(char => {
+                // Attributes
+                const heightStr = getAttribute(char.attributes, "Height");
+                const bloodStr = getAttribute(char.attributes, "Blood Type");
+                const bdayStr = getAttribute(char.attributes, "Birthday") || getAttribute(char.attributes, "Birthdate");
+
+                // Height Logic
+                const h = parseHeight(heightStr);
+                if (h && h > 50 && h < 300) { // Filter realistic sizes
+                    if (h < 150) heightBuckets["Short (<150)"].push(char);
+                    else if (h <= 170) heightBuckets["Average (150-170)"].push(char);
+                    else if (h <= 185) heightBuckets["Tall (170-185)"].push(char);
+                    else heightBuckets["Giant (>185)"].push(char);
+                }
+
+                // Blood Logic
+                if (bloodStr) {
+                    const cleanBlood = bloodStr.replace(' Type', '').trim();
+                    bloodCounts[cleanBlood] = (bloodCounts[cleanBlood] || 0) + 1;
+                }
+
+                // Birthday Logic
+                const m = parseMonth(bdayStr);
+                if (m) {
+                    processedData.birthMonths[m].push(char);
+                }
+            });
+
+            processedData.heights = heightBuckets;
+            processedData.bloodTypes = bloodCounts;
+
+            renderAnatomy();
+            renderZodiac();
+            renderPersonas("Student"); // Default filter
+
+            // Hide Loading
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        // --- RENDER FUNCTIONS ---
+
+        function renderAnatomy() {
+            // Heights
+            const container = document.getElementById('height-container');
+            let maxCount = 0;
+            Object.values(processedData.heights).forEach(arr => maxCount = Math.max(maxCount, arr.length));
+
+            for (const [label, chars] of Object.entries(processedData.heights)) {
+                const percentage = (chars.length / maxCount) * 100;
+                const exampleChar = chars[0] ? chars[0].name : "None"; // Pick a random representative
+                
+                const html = `
+                    <div>
+                        <div class="flex justify-between text-sm font-medium mb-1">
+                            <span>${label}</span>
+                            <span class="text-slate-500">${chars.length} chars</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-4 overflow-hidden">
+                            <div class="bg-indigo-500 h-4 rounded-full" style="width: ${percentage}%"></div>
+                        </div>
+                        <div class="text-xs text-slate-400 mt-1 italic">Example: ${exampleChar}</div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            }
+
+            // Blood Types
+            const bloodContainer = document.getElementById('blood-container');
+            // Sort by frequency
+            const sortedBlood = Object.entries(processedData.bloodTypes)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 4); // Top 4
+
+            sortedBlood.forEach(([type, count]) => {
+                const html = `
+                    <div class="bg-slate-50 p-4 rounded-lg text-center border border-slate-100">
+                        <div class="text-2xl font-bold text-slate-800">${type}</div>
+                        <div class="text-xs text-slate-500 uppercase tracking-wide mt-1">Type</div>
+                        <div class="text-sm font-mono text-indigo-600 mt-2">${count}</div>
+                    </div>
+                `;
+                bloodContainer.innerHTML += html;
+            });
+        }
+
+        function renderZodiac() {
+            const grid = document.getElementById('calendar-grid');
+            const months = Object.keys(processedData.birthMonths);
+            
+            // Find max for heatmap coloring
+            let maxM = 0;
+            let maxMonthName = "";
+            months.forEach(m => {
+                const len = processedData.birthMonths[m].length;
+                if(len > maxM) { maxM = len; maxMonthName = m; }
+            });
+
+            document.getElementById('popular-month').textContent = maxMonthName;
+
+            months.forEach(m => {
+                const count = processedData.birthMonths[m].length;
+                // Calculate opacity for heatmap effect (min 0.5, max 1.0)
+                const opacity = 0.4 + ((count / maxM) * 0.6);
+                
+                const card = document.createElement('div');
+                card.className = "bg-white p-6 rounded-xl border border-slate-100 cursor-pointer transition-all hover:border-purple-400 hover:shadow-lg group";
+                card.onclick = () => showMonthDetails(m);
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <h4 class="text-lg font-bold text-slate-700 group-hover:text-purple-600">${m.substring(0, 3)}</h4>
+                        <span class="text-xs font-mono bg-slate-100 px-2 py-1 rounded text-slate-500">${count}</span>
+                    </div>
+                    <div class="mt-4 w-full bg-purple-100 h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-purple-600 h-full" style="width: ${(count/maxM)*100}%"></div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function showMonthDetails(month) {
+            const container = document.getElementById('month-detail');
+            const title = document.getElementById('month-title');
+            const list = document.getElementById('month-list');
+            
+            container.classList.remove('hidden');
+            title.textContent = `${month} Birthdays`;
+            list.innerHTML = '';
+
+            // Show top 9 characters (by description length as proxy for importance)
+            const chars = processedData.birthMonths[month]
+                .sort((a,b) => b.description.length - a.description.length)
+                .slice(0, 9);
+
+            chars.forEach(c => {
+                const colorClass = getColorFromName(c.name);
+                const initials = getInitials(c.name);
+                const day = getAttribute(c.attributes, "Birthday") || "?";
+
+                list.innerHTML += `
+                    <div class="flex items-center p-3 bg-slate-800 rounded-lg border border-slate-700">
+                        <div class="h-10 w-10 rounded-full ${colorClass} flex items-center justify-center font-bold text-sm mr-3 flex-shrink-0">
+                            ${initials}
+                        </div>
+                        <div>
+                            <div class="font-bold text-sm text-slate-200 truncate">${c.name}</div>
+                            <div class="text-xs text-slate-500">${day}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Scroll to detail view
+            container.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+        }
+
+        function renderPersonas(activeKeyword) {
+            // 1. Render Filters
+            const filterContainer = document.getElementById('keyword-filters');
+            filterContainer.innerHTML = '';
+            
+            KEYWORDS.forEach(kw => {
+                const btn = document.createElement('button');
+                const isActive = kw === activeKeyword;
+                btn.className = `px-4 py-2 rounded-full text-sm font-medium transition-all ${isActive ? 'bg-emerald-600 text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:border-emerald-400'}`;
+                btn.textContent = kw;
+                btn.onclick = () => renderPersonas(kw);
+                filterContainer.appendChild(btn);
+            });
+
+            // 2. Filter Data
+            const grid = document.getElementById('persona-grid');
+            grid.innerHTML = '';
+
+            // Case insensitive search in description
+            const matches = allCharacters.filter(c => c.description.toLowerCase().includes(activeKeyword.toLowerCase()))
+                .sort((a,b) => b.description.length - a.description.length) // Show most detailed first
+                .slice(0, 12); // Limit to 12 cards
+
+            if (matches.length === 0) {
+                grid.innerHTML = `<div class="col-span-3 text-center text-slate-400 py-12">No characters found matching "${activeKeyword}".</div>`;
+                return;
+            }
+
+            matches.forEach(c => {
+                const colorClass = getColorFromName(c.name);
+                const initials = getInitials(c.name);
+                // Extract a snippet of bio
+                const snippet = c.description.substring(0, 120) + "...";
+
+                grid.innerHTML += `
+                    <div class="card-hover bg-white rounded-xl p-6 border border-slate-200 flex flex-col h-full">
+                        <div class="flex items-center mb-4">
+                            <div class="h-12 w-12 rounded-full ${colorClass} flex items-center justify-center font-bold text-lg mr-4 shadow-sm">
+                                ${initials}
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 line-clamp-1">${c.name}</h4>
+                                <span class="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded">ID: ${c.character_id}</span>
+                            </div>
+                        </div>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-4 flex-grow">
+                            ${snippet}
+                        </p>
+                        <div class="border-t border-slate-100 pt-4 mt-auto flex flex-wrap gap-2">
+                            <!-- Mini stats pills -->
+                            ${getAttribute(c.attributes, "Height") ? `<span class="text-xs bg-slate-50 text-slate-500 px-2 py-1 rounded border border-slate-100">${getAttribute(c.attributes, "Height")}</span>` : ''}
+                            ${getAttribute(c.attributes, "Age") ? `<span class="text-xs bg-slate-50 text-slate-500 px-2 py-1 rounded border border-slate-100">${getAttribute(c.attributes, "Age")}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Run
+        init();
+
+    </script>
+</body>
+</html>
